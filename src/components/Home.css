@@ -1,0 +1,42 @@
+.home {
+    text-align: center;
+    padding: 2rem;
+    animation: fadeIn 1s ease;
+  }
+  
+  .home h2 {
+    font-size: 2rem;
+    color: #222;
+    margin-bottom: 1rem;
+  }
+  
+  .home p {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    color: #555;
+    max-width: 600px;
+    margin: 0 auto 2rem;
+  }
+  
+  .home ul {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  .home ul li {
+    font-size: 1.1rem;
+    color: #444;
+    margin: 0.5rem 0;
+  }
+  
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  

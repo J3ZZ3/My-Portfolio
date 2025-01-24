@@ -1,0 +1,62 @@
+.fade-enter {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+.fade-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 300ms ease, transform 300ms ease;
+}
+
+.fade-exit {
+  opacity: 1;
+}
+
+.fade-exit-active {
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: opacity 300ms ease, transform 300ms ease;
+}
+
+.app {
+  display: flex;
+  flex-direction: column; /* Stack children vertically */
+  min-height: 100vh; /* Ensure the app takes at least the full height of the viewport */
+  background-image: url('./components/images/background.gif'); /* Set your GIF path here */
+  background-size: cover; /* Cover the entire area */
+  background-position: center; /* Center the background */
+}
+
+.content {
+  flex: 1; /* Allow content to grow and fill available space */
+  margin-left: 240px; /* Adjust based on the width of the sidebar */
+  padding: 2rem;
+  padding-bottom: 60px; /* Add padding to the bottom to prevent overlap with the footer */
+}
+
+.sections {
+  margin-top: 2rem;
+}
+
+section {
+  margin-bottom: 4rem; /* Space between sections */
+}
+
+@keyframes pulse {
+  0% {
+    background-color: #ffffff; /* White */
+  }
+  25% {
+    background-color: #cccccc; /* Light gray */
+  }
+  50% {
+    background-color: #999999; /* Medium gray */
+  }
+  75% {
+    background-color: #666666; /* Dark gray */
+  }
+  100% {
+    background-color: #000000; /* Black */
+  }
+}
