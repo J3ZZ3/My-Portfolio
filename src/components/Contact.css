@@ -1,13 +1,13 @@
 .contact {
     text-align: center;
     padding: 2rem;
-    background-color: #ffffff;
+    background-color: #ffffff00;
     min-height: 50vh;
   }
   
   .contact h2 {
     font-size: 2rem;
-    color: #222;
+    color: #0078ff;
     margin-bottom: 1rem;
   }
   
@@ -18,12 +18,29 @@
   }
   
   .contact a {
-    color: #0078ff;
+    gap: 2rem;
+    color: #01a9f7;
     text-decoration: none;
     transition: color 0.3s ease;
   }
   
   .contact a:hover {
-    color: #0056b3;
+    color: #0078ff;
+  }
+  
+  .icon-container {
+    display: flex;
+    justify-content: center;
+    gap: 6rem;
+    margin-top: 6rem;
+  }
+  
+  .icon-container a {
+    color: #01a9f7;
+    transition: color 0.3s ease;
+  }
+  
+  .icon-container a:hover {
+    color: #0078ff;
   }
   

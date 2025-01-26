@@ -1,42 +1,80 @@
+.logo {
+    height: 200px; /* Maintain aspect ratio */
+    margin-bottom: 1.5rem; /* Space below the logo */
+}
+
 .home {
     text-align: center;
     padding: 2rem;
     animation: fadeIn 1s ease;
-  }
-  
-  .home h2 {
-    font-size: 2rem;
-    color: #222;
-    margin-bottom: 1rem;
-  }
-  
-  .home p {
-    font-size: 1.1rem;
+    background-color: #ffffff00; /* Transparent background */
+}
+
+.color-line {
+    height: 5px; /* Height of the line */
+    margin: 1rem auto; /* Center the line */
+    width: 80%; /* Width of the line */
+    background: linear-gradient(270deg, #01a9f7, #0078ff, #01a9f7); /* Gradient colors */
+    animation: colorFade 3s infinite alternate; /* Animation for fading colors */
+}
+
+@keyframes colorFade {
+    0% {
+        background: #01a9f7; /* Start color */
+    }
+    50% {
+        background: #0078ff; /* Middle color */
+    }
+    100% {
+        background: #01a9f7; /* End color */
+    }
+}
+
+.home p {
+    font-size: 1.3rem;
     line-height: 1.6;
-    color: #555;
+    color: #01a9f7; /* Change to match project paragraph color */
     max-width: 600px;
     margin: 0 auto 2rem;
-  }
-  
-  .home ul {
+    margin-top: 5rem;
+}
+
+.home ul {
     list-style-type: none;
     padding: 0;
-  }
-  
-  .home ul li {
+}
+
+.home ul li {
     font-size: 1.1rem;
-    color: #444;
+    color: #444; /* Keep this color or adjust as needed */
     margin: 0.5rem 0;
-  }
-  
-  @keyframes fadeIn {
+    display: flex; /* Use flexbox for alignment */
+    align-items: center; /* Center icons vertically */
+}
+
+.home ul li .fa-icon {
+    margin-right: 0.5rem; /* Space between icon and text */
+}
+
+@keyframes fadeIn {
     from {
-      opacity: 0;
-      transform: translateY(20px);
+        opacity: 0;
+        transform: translateY(20px);
     }
     to {
-      opacity: 1;
-      transform: translateY(0);
+        opacity: 1;
+        transform: translateY(0);
     }
-  }
-  
+}
+
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+
+

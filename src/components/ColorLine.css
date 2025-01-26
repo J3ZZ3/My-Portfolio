@@ -1,0 +1,19 @@
+.color-line {
+    height: 5px;
+    margin: 1rem auto;
+    width: 100%;
+    background: linear-gradient(270deg, #01a9f7, #0078ff, #01a9f7);
+    animation: colorFade 3s infinite alternate;
+}
+
+@keyframes colorFade {
+    0% {
+        background: #01a9f7;
+    }
+    50% {
+        background: #0078ff;
+    }
+    100% {
+        background: #01a9f7;
+    }
+} 

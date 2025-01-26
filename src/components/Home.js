@@ -1,22 +1,19 @@
 import React from "react";
 import "./Home.css";
+import ColorLine from './ColorLine'; // Import the ColorLine component
+import logo from './images/name.png'; // Adjust the path as necessary
 
 function Home() {
   return (
     <div className="home">
-      <h2>👋 Hello! I'm Jesse Mashoana</h2>
+      <img src={logo} alt="Logo" className="logo" />
+      <ColorLine /> {/* Use the ColorLine component */}
       <p>
-        Welcome to my portfolio! I'm a <strong>Junior Developer</strong> passionate about building
-        functional and user-friendly applications. I enjoy solving real-world problems while
-        constantly learning and improving my skills.
+        Welcome to my portfolio! I am a dedicated and results-driven Junior Developer with a passion for crafting functional, user-friendly, and visually engaging applications. My goal is to create innovative solutions that address real-world challenges, combining creativity with technical expertise.
       </p>
-      <h3>🚀 Skills & Tools</h3>
-      <ul>
-        <li><strong>Frontend:</strong> JavaScript (ES6+), HTML5, CSS3, React.js</li>
-        <li><strong>Backend:</strong> Node.js, Express.js</li>
-        <li><strong>Database:</strong> Firebase, Firestore, MongoDB (Basic)</li>
-        <li><strong>Tools:</strong> Git, GitHub, Postman, VS Code</li>
-      </ul>
+      <p>
+        I thrive in dynamic environments where I can collaborate with others, tackle complex problems, and continuously expand my skill set. Whether it's optimizing performance, enhancing user experiences, or building intuitive interfaces, I approach each project with a commitment to excellence and a growth mindset.
+      </p>
     </div>
   );
 }

@@ -21,18 +21,18 @@
 
 .app {
   display: flex;
-  flex-direction: column; /* Stack children vertically */
-  min-height: 100vh; /* Ensure the app takes at least the full height of the viewport */
-  background-image: url('./components/images/background.gif'); /* Set your GIF path here */
-  background-size: cover; /* Cover the entire area */
-  background-position: center; /* Center the background */
+  flex-direction: column;
+  min-height: 100vh;
+  background-image: url('./components/images/background.gif');
+  background-size: cover;
+  background-position: center;
 }
 
 .content {
-  flex: 1; /* Allow content to grow and fill available space */
-  margin-left: 240px; /* Adjust based on the width of the sidebar */
+  flex: 1;
+  margin-left: 240px;
   padding: 2rem;
-  padding-bottom: 60px; /* Add padding to the bottom to prevent overlap with the footer */
+  padding-bottom: 60px;
 }
 
 .sections {
@@ -40,23 +40,23 @@
 }
 
 section {
-  margin-bottom: 4rem; /* Space between sections */
+  margin-bottom: 4rem;
 }
 
 @keyframes pulse {
   0% {
-    background-color: #ffffff; /* White */
+    background-color: #ffffff;
   }
   25% {
-    background-color: #cccccc; /* Light gray */
+    background-color: #cccccc;
   }
   50% {
-    background-color: #999999; /* Medium gray */
+    background-color: #999999;
   }
   75% {
-    background-color: #666666; /* Dark gray */
+    background-color: #666666;
   }
   100% {
-    background-color: #000000; /* Black */
+    background-color: #000000;
   }
 }

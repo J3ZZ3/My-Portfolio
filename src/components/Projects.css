@@ -1,24 +1,32 @@
 .projects {
     padding: 2rem;
-    background-color: #f9f9f9;
+    background-color: #ffffff00;
     min-height: 100vh;
   }
   
   .projects h2 {
     text-align: center;
     font-size: 2rem;
-    color: #222;
+    color: #0078ff;
     margin-bottom: 2rem;
   }
   
+  .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* 3 columns */
+    gap: 1rem; /* Space between grid items */
+  }
+  
   .project {
-    background-color: #ffffff;
+    background-color: #ffffff00;
     border-radius: 8px;
     padding: 1.5rem;
-    margin: 1rem auto;
+    margin: 1rem;
     box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-    max-width: 800px;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: 2px solid transparent;
+    max-width: 100%;
+    position: relative;
   }
   
   .project:hover {
@@ -26,26 +34,58 @@
     box-shadow: 0px 6px 10px rgba(0, 0, 0, 0.15);
   }
   
+  .project:hover::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    border-radius: 8px;
+    border: 2px solid transparent;
+    animation: pulse-border 1.5s infinite;
+    pointer-events: none; /* Prevents blocking clicks on links */
+  }
+  
   .project h3 {
     font-size: 1.5rem;
-    color: #0078ff;
+    color: #0078ff; /* Blue */
     margin-bottom: 0.5rem;
   }
   
   .project p {
-    color: #555;
+    color: #01a9f7; /* Cyan */
     margin-bottom: 1rem;
+  }
+  
+  .project .links {
+    display: flex; /* Use flexbox for alignment */
+    gap: 1rem; /* Space between links */
   }
   
   .project .links a {
     text-decoration: none;
     color: #0078ff;
     font-size: 0.9rem;
-    margin-right: 1rem;
     transition: color 0.3s ease;
   }
   
   .project .links a:hover {
     color: #0056b3;
+  }
+  
+  @keyframes pulse-border {
+    0% {
+        border-color: #0078ff; /* Blue */
+    }
+    33% {
+        border-color: #01a9f7; /* Cyan */
+    }
+    66% {
+        border-color: #800080; /* Purple */
+    }
+    100% {
+        border-color: #0078ff; /* Loop back to blue */
+    }
   }
   

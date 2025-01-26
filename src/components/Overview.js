@@ -1,29 +1,14 @@
 import React from "react";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faHome, faProjectDiagram, faEnvelope } from '@fortawesome/free-solid-svg-icons';
 import "./Overview.css"; // Create a CSS file for styling
+import bottomGif from './images/bottom.gif'; // Import the bottom GIF
+import topGif from './images/top.gif'; // Import the new top GIF
 
 function Overview() {
   return (
     <div className="overview">
+      <img src={topGif} alt="Top Overview GIF" className="overview-top-gif" />
       <h2>Overview</h2>
-      <ul>
-        <li>
-          <a href="#home" title="Home">
-            <FontAwesomeIcon icon={faHome} size="2x" />
-          </a>
-        </li>
-        <li>
-          <a href="#projects" title="Projects">
-            <FontAwesomeIcon icon={faProjectDiagram} size="2x" />
-          </a>
-        </li>
-        <li>
-          <a href="#contact" title="Contact">
-            <FontAwesomeIcon icon={faEnvelope} size="2x" />
-          </a>
-        </li>
-      </ul>
+      <img src={bottomGif} alt="Bottom Overview GIF" className="overview-gif" />
     </div>
   );
 }
