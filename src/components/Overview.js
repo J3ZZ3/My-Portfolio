@@ -7,7 +7,6 @@ function Overview() {
   return (
     <div className="overview">
       <img src={topGif} alt="Top Overview GIF" className="overview-top-gif" />
-      <h2>Overview</h2>
       <img src={bottomGif} alt="Bottom Overview GIF" className="overview-gif" />
     </div>
   );
