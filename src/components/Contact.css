@@ -44,3 +44,59 @@
     color: #0078ff;
   }
   
+  /* Responsive adjustments */
+  @media screen and (max-width: 768px) {
+    .icon-container {
+      gap: 3rem; /* Reduce gap on mobile */
+      margin-top: 3rem;
+    }
+
+    .contact h2 {
+      font-size: 1.5rem; /* Smaller heading on mobile */
+    }
+
+    .contact p {
+      font-size: 1rem; /* Smaller text on mobile */
+    }
+  }
+  
+  /* Additional mobile breakpoints */
+  @media screen and (max-width: 425px) {
+    .icon-container {
+      gap: 2rem;
+      margin-top: 2rem;
+    }
+    
+    .contact h2 {
+      font-size: 1.4rem;
+    }
+    
+    .contact p {
+      font-size: 0.95rem;
+    }
+  }
+  
+  @media screen and (max-width: 375px) {
+    .icon-container {
+      gap: 1.5rem;
+    }
+    
+    .icon-container a {
+      transform: scale(0.9);
+    }
+  }
+  
+  @media screen and (max-width: 320px) {
+    .icon-container {
+      gap: 1rem;
+    }
+    
+    .icon-container a {
+      transform: scale(0.8);
+    }
+    
+    .contact h2 {
+      font-size: 1.3rem;
+    }
+  }
+  

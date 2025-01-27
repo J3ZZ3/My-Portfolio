@@ -29,10 +29,22 @@
 }
 
 .content {
-  flex: 1;
-  margin-left: 240px;
-  padding: 2rem;
-  padding-bottom: 60px;
+  margin-left: 200px; /* Match overview width */
+  padding: 1rem;
+  transition: margin-left 0.3s ease;
+}
+
+/* Add media queries to adjust content margin */
+@media screen and (max-width: 1024px) {
+  .content {
+    margin-left: 150px; /* Match overview width for medium screens */
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .content {
+    margin-left: 0; /* No margin on mobile when overview is hidden */
+  }
 }
 
 .sections {
@@ -58,5 +70,61 @@ section {
   }
   100% {
     background-color: #000000;
+  }
+}
+
+/* Add responsive padding */
+@media screen and (max-width: 768px) {
+  .sections {
+    margin-top: 1rem;
+  }
+
+  section {
+    margin-bottom: 2rem;
+    padding: 0 1rem;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .sections {
+    margin-top: 0.5rem;
+  }
+
+  section {
+    margin-bottom: 1.5rem;
+  }
+}
+
+/* Additional mobile breakpoints */
+@media screen and (max-width: 425px) {
+  .sections {
+    margin-top: 0.75rem;
+  }
+  
+  section {
+    margin-bottom: 1.25rem;
+    padding: 0 0.75rem;
+  }
+}
+
+@media screen and (max-width: 375px) {
+  .sections {
+    margin-top: 0.5rem;
+  }
+  
+  section {
+    margin-bottom: 1rem;
+    padding: 0 0.5rem;
+  }
+}
+
+@media screen and (max-width: 320px) {
+  .sections {
+    margin-top: 0.25rem;
+  }
+  
+  section {
+    margin-bottom: 0.75rem;
+    padding: 0 0.25rem;
   }
 }

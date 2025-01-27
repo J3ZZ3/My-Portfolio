@@ -7,61 +7,45 @@ function Projects() {
       name: "Online Marketplace",
       description: "A React and Node.js-based marketplace for users to buy and sell products.",
       stack: "React.js, Node.js, Firebase, Redux",
-      frontend: "https://github.com/J3ZZ3/Marketplace",
-      backend: "https://github.com/J3ZZ3/Marketplace_Server",
-      demo: "https://your-demo-link.com/marketplace",
+      frontend_repo: "https://github.com/J3ZZ3/Marketplace",
+      backend_repo: "https://github.com/J3ZZ3/Marketplace_Server",
+      demo: "https://marketplace-2wv4.vercel.app/",
     },
     {
       name: "Employee Management System",
       description: "A CRUD application to manage employee details with authentication and admin functionalities.",
-      stack: "React.js, Firebase, Node.js, Express.js",
-      frontend: "https://github.com/J3ZZ3/employeeApp-frontend",
-      backend: "https://github.com/J3ZZ3/employeeApp-backend",
-      demo: "https://your-demo-link.com/employee-management",
+      stack: "React.js, CSS, JavaScipt, Local storage",
+      repo: "https://github.com/J3ZZ3/Employeeapp_final",
+      demo: "https://employeeapp-final.vercel.app/",
     },
     {
       name: "Audio Recorder App",
       description: "A React Native app for recording and managing voice notes.",
       stack: "React Native",
-      link: "https://github.com/J3ZZ3/AudioRecorderApp",
-      demo: "https://your-demo-link.com/audio-recorder",
+      repo: "https://github.com/J3ZZ3/AudioRecorderApp",
+      apk: "https://drive.google.com/file/d/1UG-QOMhotIiU7aVgmwqrTLXDnqykByFx/view?usp=drive_link",
     },
     {
-      name: "Project 4",
-      description: "Description for project 4.",
-      stack: "Tech Stack for project 4",
-      link: "#",
+      name: "Recipe Management Application",
+      description: "A recipe website to discover and learn womderful meals across the world.",
+      stack: "React.js, Supabase, External API: MealDB API, Authentication: Supabase Auth, Storage: Supabase Storage, PDF Generation: jsPDF",
+      repo:"",
+      demo: "https://recipehub-jade.vercel.app/",
     },
     {
-      name: "Project 5",
-      description: "Description for project 5.",
-      stack: "Tech Stack for project 5",
-      link: "#",
+      name: "Weather App",
+      description: "A weather application built with React.js that allows users to search for weather information by city name or live location.",
+      stack: "React.js, Css, WeatherAPI.com ,Axios, React Router",
+      repo: "https://github.com/J3ZZ3/weather-app",
+      demo: "https://weatherapp-sage-sigma.vercel.app/",
     },
     {
-      name: "Project 6",
-      description: "Description for project 6.",
-      stack: "Tech Stack for project 6",
-      link: "#",
-    },
-    {
-      name: "Project 7",
-      description: "Description for project 7.",
-      stack: "Tech Stack for project 7",
-      link: "#",
-    },
-    {
-      name: "Project 8",
-      description: "Description for project 8.",
-      stack: "Tech Stack for project 8",
-      link: "#",
-    },
-    {
-      name: "Project 9",
-      description: "Description for project 9.",
-      stack: "Tech Stack for project 9",
-      link: "#",
-    },
+      name: "Task Management Application",
+      description: "This project is a To Do List Application built with React. It allows users to create, edit, delete, and manage tasks efficiently. The application features user authentication, profile management, and a visually appealing interface with animations..",
+      stack: "React.js, React Router, Local Storage, React Spring",
+      repo: "https://github.com/J3ZZ3/weather-app",
+      link: "https://to-do-list-two-omega-57.vercel.app/",
+    }
   ];
 
   return (
@@ -74,14 +58,20 @@ function Projects() {
             <p>{project.description}</p>
             <p><strong>Tech Stack:</strong> {project.stack}</p>
             <div className="links">
-              {project.frontend && (
-                <a href={project.frontend} target="_blank" rel="noopener noreferrer">Frontend</a>
+              {project.frontend_repo && (
+                <a href={project.frontend_repo} target="_blank" rel="noopener noreferrer">Frontend Repo</a>
               )}
-              {project.backend && (
-                <a href={project.backend} target="_blank" rel="noopener noreferrer">Backend</a>
+              {project.backend_repo && (
+                <a href={project.backend_repo} target="_blank" rel="noopener noreferrer">Backend Repo</a>
+              )}
+              {project.repo && (
+                <a href={project.repo} target="_blank" rel="noopener noreferrer">Repo</a>
               )}
               {project.demo && (
                 <a href={project.demo} target="_blank" rel="noopener noreferrer">Demo</a>
+              )}
+              {project.apk && (
+                <a href={project.apk} target="_blank" rel="noopener noreferrer">Apk</a>
               )}
             </div>
           </div>

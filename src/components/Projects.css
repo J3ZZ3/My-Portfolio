@@ -13,8 +13,70 @@
   
   .projects-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr); /* 3 columns */
-    gap: 1rem; /* Space between grid items */
+    grid-template-columns: repeat(3, 1fr); /* 3 columns by default */
+    gap: 1rem;
+  }
+  
+  /* Responsive adjustments */
+  @media screen and (max-width: 1024px) {
+    .projects-grid {
+      grid-template-columns: repeat(2, 1fr); /* 2 columns on medium screens */
+    }
+  }
+  
+  @media screen and (max-width: 768px) {
+    .projects-grid {
+      grid-template-columns: 1fr; /* Single column on mobile */
+    }
+    
+    .project {
+      margin: 0.5rem 0; /* Reduce margins on mobile */
+    }
+  }
+  
+  /* Additional mobile breakpoints */
+  @media screen and (max-width: 425px) {
+    .projects h2 {
+      font-size: 1.75rem;
+    }
+    
+    .project {
+      padding: 1rem;
+      margin: 0.5rem 0;
+    }
+    
+    .project h3 {
+      font-size: 1.3rem;
+    }
+    
+    .project p {
+      font-size: 0.9rem;
+    }
+  }
+  
+  @media screen and (max-width: 375px) {
+    .projects h2 {
+      font-size: 1.5rem;
+    }
+    
+    .project {
+      padding: 0.75rem;
+    }
+    
+    .project .links {
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+  }
+  
+  @media screen and (max-width: 320px) {
+    .project h3 {
+      font-size: 1.2rem;
+    }
+    
+    .project p {
+      font-size: 0.85rem;
+    }
   }
   
   .project {

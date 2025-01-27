@@ -13,6 +13,20 @@
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
+  transition: transform 0.3s ease;
+}
+
+/* Add media queries for responsiveness */
+@media screen and (max-width: 1024px) {
+  .overview {
+    width: 150px; /* Slightly smaller on medium screens */
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .overview {
+    transform: translateX(-100%); /* Hide overview on mobile */
+  }
 }
 
 .overview h2 {

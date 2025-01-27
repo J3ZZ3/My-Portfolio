@@ -1,39 +1,39 @@
 .logo {
-    height: 200px; /* Maintain aspect ratio */
-    margin-bottom: 1.5rem; /* Space below the logo */
+    height: 200px;
+    margin-bottom: 1.5rem;
 }
 
 .home {
     text-align: center;
     padding: 2rem;
     animation: fadeIn 1s ease;
-    background-color: #ffffff00; /* Transparent background */
+    background-color: #ffffff00;
 }
 
 .color-line {
-    height: 5px; /* Height of the line */
-    margin: 1rem auto; /* Center the line */
-    width: 80%; /* Width of the line */
-    background: linear-gradient(270deg, #01a9f7, #0078ff, #01a9f7); /* Gradient colors */
-    animation: colorFade 3s infinite alternate; /* Animation for fading colors */
+    height: 5px;
+    margin: 1rem auto;
+    width: 80%;
+    background: linear-gradient(270deg, #01a9f7, #0078ff, #01a9f7);
+    animation: colorFade 3s infinite alternate;
 }
 
 @keyframes colorFade {
     0% {
-        background: #01a9f7; /* Start color */
+        background: #01a9f7;
     }
     50% {
-        background: #0078ff; /* Middle color */
+        background: #0078ff;
     }
     100% {
-        background: #01a9f7; /* End color */
+        background: #01a9f7;
     }
 }
 
 .home p {
     font-size: 1.3rem;
     line-height: 1.6;
-    color: #01a9f7; /* Change to match project paragraph color */
+    color: #01a9f7;
     max-width: 600px;
     margin: 0 auto 2rem;
     margin-top: 5rem;
@@ -46,14 +46,14 @@
 
 .home ul li {
     font-size: 1.1rem;
-    color: #444; /* Keep this color or adjust as needed */
+    color: #444;
     margin: 0.5rem 0;
-    display: flex; /* Use flexbox for alignment */
-    align-items: center; /* Center icons vertically */
+    display: flex;
+    align-items: center;
 }
 
 .home ul li .fa-icon {
-    margin-right: 0.5rem; /* Space between icon and text */
+    margin-right: 0.5rem;
 }
 
 @keyframes fadeIn {
@@ -73,6 +73,54 @@
     }
     50% {
         transform: translateY(-10px);
+    }
+}
+
+@media screen and (max-width: 1024px) {
+    .logo {
+        height: 180px;
+        margin-bottom: 1.25rem;
+        margin-left: -0.5rem;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .logo {
+        height: 150px;
+        margin-bottom: 1rem;
+        margin-left: -1rem;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .logo {
+        height: 120px;
+        margin-bottom: 0.75rem;
+        margin-left: -3.4rem;
+    }
+}
+
+@media screen and (max-width: 425px) {
+    .logo {
+        height: 110px;
+        margin-bottom: 0.75rem;
+        margin-left: -3.2rem;
+    }
+}
+
+@media screen and (max-width: 375px) {
+    .logo {
+        height: 100px;
+        margin-bottom: 0.5rem;
+        margin-left: -3rem;
+    }
+}
+
+@media screen and (max-width: 320px) {
+    .logo {
+        height: 90px;
+        margin-bottom: 0.5rem;
+        margin-left: 3;
     }
 }
 
