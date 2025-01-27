@@ -71,8 +71,8 @@ function Projects() {
         {projects.map((project, index) => (
           <div key={index} className="project">
             <h3>{project.name}</h3>
-            <p>{project.description}</p>
-            <p><strong>Tech Stack:</strong> {project.stack}</p>
+            <p className="description">{project.description}</p>
+            <p className="tech-stack"><strong>Tech Stack:</strong> {project.stack}</p>
             <div className="links">
               {project.frontend && (
                 <a href={project.frontend} target="_blank" rel="noopener noreferrer">Frontend</a>
@@ -82,6 +82,9 @@ function Projects() {
               )}
               {project.demo && (
                 <a href={project.demo} target="_blank" rel="noopener noreferrer">Demo</a>
+              )}
+              {project.link && (
+                <a href={project.link} target="_blank" rel="noopener noreferrer">View Project</a>
               )}
             </div>
           </div>

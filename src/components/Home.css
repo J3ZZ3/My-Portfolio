@@ -1,5 +1,7 @@
 .logo {
     height: 200px; /* Maintain aspect ratio */
+    max-width: 90%;
+    object-fit: contain;
     margin-bottom: 1.5rem; /* Space below the logo */
 }
 
@@ -74,6 +76,70 @@
     50% {
         transform: translateY(-10px);
     }
+}
+
+@media screen and (max-width: 768px) {
+    .home {
+        padding: 1rem;
+    }
+    
+    .home p {
+        font-size: 1.1rem;
+        margin-top: 3rem;
+        padding: 0 1rem;
+    }
+    
+    .logo {
+        height: 150px;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .home p {
+        font-size: 1rem;
+        margin-top: 2rem;
+    }
+    
+    .logo {
+        height: 120px;
+    }
+}
+
+.profile-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.profile-pic {
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #0078ff;
+  box-shadow: 0 0 20px rgba(0, 120, 255, 0.3);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.profile-pic:hover {
+  transform: scale(1.5);
+  box-shadow: 0 0 30px rgba(0, 120, 255, 0.5);
+}
+
+@media screen and (max-width: 768px) {
+  .profile-pic {
+    width: 150px;
+    height: 150px;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .profile-pic {
+    width: 120px;
+    height: 120px;
+  }
 }
 
 

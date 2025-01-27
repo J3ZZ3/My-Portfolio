@@ -11,6 +11,7 @@
     grid-template-columns: repeat(5, 1fr); /* 5 columns */
     gap: 1rem; /* Space between items */
     margin-top: 1rem; /* Space above the grid */
+    padding: 0 1rem;
 }
 
 .icon-item {
@@ -57,5 +58,37 @@
     100% {
         color: rgba(0, 120, 255, 0.5); /* Loop back to blue */
         opacity: 0.8; /* Slightly visible */
+    }
+}
+
+@media screen and (max-width: 1024px) {
+    .icon-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .icon-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+    
+    .techstack h3 {
+        font-size: 1.75rem;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .icon-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.5rem;
+    }
+    
+    .custom-icon {
+        width: 50px;
+        height: 50px;
+    }
+    
+    .icon-item {
+        font-size: 0.9rem;
     }
 }

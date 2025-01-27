@@ -30,17 +30,67 @@
 
 .content {
   flex: 1;
-  margin-left: 240px;
+  margin-left: 300px;
   padding: 2rem;
   padding-bottom: 60px;
+  transition: margin-left 0.3s ease;
 }
 
 .sections {
   margin-top: 2rem;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 section {
   margin-bottom: 4rem;
+}
+
+@media screen and (min-width: 1440px) {
+  .content {
+    margin-left: 350px;
+  }
+}
+
+@media screen and (min-width: 1920px) {
+  .content {
+    margin-left: 400px;
+  }
+}
+
+@media screen and (max-width: 1200px) {
+  .content {
+    margin-left: 250px;
+  }
+}
+
+@media screen and (max-width: 1024px) {
+  .content {
+    margin-left: 200px;
+    padding: 1.5rem;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .content {
+    margin-left: 0;
+    padding: 1rem;
+  }
+
+  section {
+    margin-bottom: 3rem;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .content {
+    padding: 0.75rem;
+  }
+
+  section {
+    margin-bottom: 2rem;
+  }
 }
 
 @keyframes pulse {

@@ -2,17 +2,19 @@
   position: fixed;
   top: 0;
   left: 0;
-  width: 200px;
+  width: 300px;
   height: 100vh;
   background-image: url('./images/overview.gif');
   background-size: cover;
   background-position: center;
-  padding: 1rem;
+  padding: 1.5rem;
   box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
+  transition: all 0.3s ease;
+  z-index: 1000;
 }
 
 .overview h2 {
@@ -24,33 +26,173 @@
   list-style-type: none;
   padding: 0;
   margin: 0;
+  margin-top: 2rem;
+  width: 100%;
 }
 
 .overview ul li {
-  margin: 1rem 0;
+  margin: 0.5rem 0;
 }
 
 .overview ul li a {
   text-decoration: none;
   color: #0078ff;
-  transition: color 0.3s ease;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  gap: 0.75rem;
 }
 
 .overview ul li a:hover {
   color: #0056b3;
+  background: rgba(255, 255, 255, 0.1);
+  transform: translateX(5px);
+}
+
+.overview ul li a .nav-icon {
+  font-size: 1.2rem;
+  min-width: 1.2rem;
+}
+
+.overview ul li a span {
+  font-size: 0.9rem;
 }
 
 .overview-gif {
   width: 100%;
   max-width: 150px;
   margin-top: auto;
-  margin-bottom: 5rem;
-  scale: 2;
+  margin-bottom: 2rem;
 }
 
 .overview-top-gif {
   width: 100%;
   max-width: 150px;
-  margin-top: 3rem;
-  scale: 2;
+  margin-top: 1rem;
+}
+
+.menu-toggle {
+  display: none;
+  position: fixed;
+  top: 1rem;
+  left: 1rem;
+  z-index: 1001;
+  background: rgba(0, 0, 0, 0.7);
+  border: none;
+  padding: 0.75rem;
+  border-radius: 8px;
+  cursor: pointer;
+  color: #0078ff;
+  backdrop-filter: blur(5px);
+  transition: all 0.3s ease;
+}
+
+.menu-toggle:hover {
+  background: rgba(0, 0, 0, 0.8);
+  transform: scale(1.05);
+}
+
+@media screen and (min-width: 1440px) {
+  .overview {
+    width: 350px;
+  }
+}
+
+@media screen and (min-width: 1920px) {
+  .overview {
+    width: 400px;
+  }
+}
+
+@media screen and (max-width: 1200px) {
+  .overview {
+    width: 250px;
+  }
+}
+
+@media screen and (max-width: 1024px) {
+  .overview {
+    width: 200px;
+  }
+  
+  .overview ul li a {
+    padding: 0.6rem 0.75rem;
+    font-size: 0.9rem;
+  }
+  
+  .overview-gif, .overview-top-gif {
+    max-width: 120px;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .overview {
+    transform: translateX(-100%);
+    width: 280px;
+    background-color: rgba(0, 0, 0, 0.95);
+    opacity: 0;
+    visibility: hidden;
+  }
+
+  .overview.show {
+    transform: translateX(0);
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .menu-toggle {
+    display: block;
+  }
+
+  .menu-toggle.active {
+    left: 260px;
+  }
+  
+  .overview ul {
+    margin-top: 3rem;
+  }
+  
+  .overview ul li a {
+    padding: 1rem;
+    font-size: 1rem;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .overview {
+    width: 100%;
+  }
+
+  .menu-toggle.active {
+    left: 1rem;
+  }
+  
+  .overview ul li a {
+    padding: 1.2rem;
+    font-size: 1.1rem;
+  }
+  
+  .overview ul li a .nav-icon {
+    font-size: 1.4rem;
+  }
+  
+  .overview-gif, .overview-top-gif {
+    max-width: 100px;
+  }
+}
+
+@media screen and (max-height: 600px) {
+  .overview ul li {
+    margin: 0.25rem 0;
+  }
+  
+  .overview ul li a {
+    padding: 0.5rem 1rem;
+  }
+  
+  .overview-gif, .overview-top-gif {
+    max-width: 80px;
+  }
 } 

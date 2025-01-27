@@ -33,6 +33,7 @@
     justify-content: center;
     gap: 6rem;
     margin-top: 6rem;
+    flex-wrap: wrap;
   }
   
   .icon-container a {
@@ -42,5 +43,30 @@
   
   .icon-container a:hover {
     color: #0078ff;
+  }
+  
+  @media screen and (max-width: 768px) {
+    .contact {
+        padding: 1rem;
+    }
+    
+    .icon-container {
+        gap: 3rem;
+        margin-top: 3rem;
+    }
+    
+    .contact h2 {
+        font-size: 1.75rem;
+    }
+  }
+  
+  @media screen and (max-width: 480px) {
+    .icon-container {
+        gap: 2rem;
+    }
+    
+    .icon-container a svg {
+        font-size: 3em !important;
+    }
   }
   
