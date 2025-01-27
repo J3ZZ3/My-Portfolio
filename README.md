@@ -1,70 +1,98 @@
-# Getting Started with Create React App
+# Personal Portfolio 
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A modern, responsive portfolio  built with React.js to showcase projects and skills.
 
-## Available Scripts
+## 🚀 Features
 
-In the project directory, you can run:
+- Responsive design that works on all devices (desktop, tablet, and mobile)
+- Clean and modern UI with smooth animations
+- Project showcase with links to live demos and repositories
+- Skills section with interactive icons
+- Contact section with social media links
+- Dynamic color schemes and transitions
+- Background animations and visual effects
 
-### `npm start`
+## 🛠️ Technologies Used
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+- **React.js** - Frontend framework
+- **React Router** - Navigation and routing
+- **CSS3** - Styling and animations
+- **Font Awesome** - Icons
+- **React Transition Group** - Smooth transitions
+- **React Slick** - Carousel functionality
+- **TypeIt** - Text animations
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## 📦 Installation
 
-### `npm test`
+1. Clone the repository:
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
 
-### `npm run build`
+git clone https://github.com/J3ZZ3/My-Portfolio.git
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+2. Navigate to the project directory:
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+cd My-Portfolio
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+3. Install dependencies:
 
-### `npm run eject`
+npm install
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+4. Start the development server:
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+npm start
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+## 📱 Responsive Breakpoints
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+The website is fully responsive with the following breakpoints:
 
-## Learn More
+- Desktop: > 1024px
+- Tablet: 768px - 1024px
+- Mobile Large: 425px - 768px
+- Mobile Medium: 375px - 425px
+- Mobile Small: 320px - 375px
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## 🎨 Components
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+### Home
+- Welcome section with logo
+- Introduction text
+- Smooth transitions
 
-### Code Splitting
+### Projects
+- Grid layout of projects
+- Project cards with descriptions
+- Links to live demos and repositories
+- Responsive grid system
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+### TechStack
+- Interactive skill icons
+- Categorized technologies
+- Visual representation of expertise
 
-### Analyzing the Bundle Size
+### Contact
+- Social media links
+- Email contact
+- Professional networks
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+### Overview
+- Animated background
+- Collapsible on mobile
 
-### Making a Progressive Web App
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+## 📱 Mobile Support
 
-### Advanced Configuration
+- iOS 
+- Android
+- Responsive design for all screen sizes
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+## 👤 Author
 
-### Deployment
+Jesse Mashoana
+- GitHub: [@J3ZZ3](https://github.com/J3ZZ3)
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+## 📞 Contact
 
-### `npm run build` fails to minify
+For any questions or feedback, please reach out:
+- Email: [jesse](jesse.mashoana@gmail.com)
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+
