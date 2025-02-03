@@ -13,12 +13,11 @@ function Resume() {
         </div>
         
         <div className="resume-download">
-          <a href="./asset/Flow.pdf" 
-             download 
+          <a href="https://drive.google.com/file/d/1XwhKwkeplYalkBMwF79RjFJEHNqGuuk-/view"
              className="download-btn"
              target="_blank" 
              rel="noopener noreferrer">
-              <span>Download Resume</span>
+              <span>View Resume</span>
           </a>
         </div>
       </div>
