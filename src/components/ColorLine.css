@@ -2,6 +2,7 @@
     height: 5px;
     margin: 1rem auto;
     width: 100%;
+    max-width: 90vw;
     background: linear-gradient(270deg, #01a9f7, #0078ff, #01a9f7);
     animation: colorFade 3s infinite alternate;
 }
@@ -15,5 +16,11 @@
     }
     100% {
         background: #01a9f7;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .color-line {
+        max-width: 95vw;
     }
 } 

@@ -1,39 +1,41 @@
 .logo {
-    height: 200px;
-    margin-bottom: 1.5rem;
+    height: 200px; /* Maintain aspect ratio */
+    max-width: 90%;
+    object-fit: contain;
+    margin-bottom: 1.5rem; /* Space below the logo */
 }
 
 .home {
     text-align: center;
     padding: 2rem;
     animation: fadeIn 1s ease;
-    background-color: #ffffff00;
+    background-color: #ffffff00; /* Transparent background */
 }
 
 .color-line {
-    height: 5px;
-    margin: 1rem auto;
-    width: 80%;
-    background: linear-gradient(270deg, #01a9f7, #0078ff, #01a9f7);
-    animation: colorFade 3s infinite alternate;
+    height: 5px; /* Height of the line */
+    margin: 1rem auto; /* Center the line */
+    width: 80%; /* Width of the line */
+    background: linear-gradient(270deg, #01a9f7, #0078ff, #01a9f7); /* Gradient colors */
+    animation: colorFade 3s infinite alternate; /* Animation for fading colors */
 }
 
 @keyframes colorFade {
     0% {
-        background: #01a9f7;
+        background: #01a9f7; /* Start color */
     }
     50% {
-        background: #0078ff;
+        background: #0078ff; /* Middle color */
     }
     100% {
-        background: #01a9f7;
+        background: #01a9f7; /* End color */
     }
 }
 
 .home p {
     font-size: 1.3rem;
     line-height: 1.6;
-    color: #01a9f7;
+    color: #01a9f7; /* Change to match project paragraph color */
     max-width: 600px;
     margin: 0 auto 2rem;
     margin-top: 5rem;
@@ -46,14 +48,14 @@
 
 .home ul li {
     font-size: 1.1rem;
-    color: #444;
+    color: #444; /* Keep this color or adjust as needed */
     margin: 0.5rem 0;
-    display: flex;
-    align-items: center;
+    display: flex; /* Use flexbox for alignment */
+    align-items: center; /* Center icons vertically */
 }
 
 .home ul li .fa-icon {
-    margin-right: 0.5rem;
+    margin-right: 0.5rem; /* Space between icon and text */
 }
 
 @keyframes fadeIn {
@@ -76,52 +78,68 @@
     }
 }
 
-@media screen and (max-width: 1024px) {
-    .logo {
-        height: 180px;
-        margin-bottom: 1.25rem;
-        margin-left: -0.5rem;
-    }
-}
-
 @media screen and (max-width: 768px) {
+    .home {
+        padding: 1rem;
+    }
+    
+    .home p {
+        font-size: 1.1rem;
+        margin-top: 3rem;
+        padding: 0 1rem;
+    }
+    
     .logo {
         height: 150px;
-        margin-bottom: 1rem;
-        margin-left: -1rem;
     }
 }
 
 @media screen and (max-width: 480px) {
+    .home p {
+        font-size: 1rem;
+        margin-top: 2rem;
+    }
+    
     .logo {
         height: 120px;
-        margin-bottom: 0.75rem;
-        margin-left: -3.4rem;
     }
 }
 
-@media screen and (max-width: 425px) {
-    .logo {
-        height: 110px;
-        margin-bottom: 0.75rem;
-        margin-left: -3.2rem;
-    }
+.profile-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
 }
 
-@media screen and (max-width: 375px) {
-    .logo {
-        height: 100px;
-        margin-bottom: 0.5rem;
-        margin-left: -3rem;
-    }
+.profile-pic {
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #0078ff;
+  box-shadow: 0 0 20px rgba(0, 120, 255, 0.3);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-@media screen and (max-width: 320px) {
-    .logo {
-        height: 90px;
-        margin-bottom: 0.5rem;
-        margin-left: 3;
-    }
+.profile-pic:hover {
+  transform: scale(1.5);
+  box-shadow: 0 0 30px rgba(0, 120, 255, 0.5);
+}
+
+@media screen and (max-width: 768px) {
+  .profile-pic {
+    width: 150px;
+    height: 150px;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .profile-pic {
+    width: 120px;
+    height: 120px;
+  }
 }
 
 
