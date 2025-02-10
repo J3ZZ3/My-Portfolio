@@ -11,7 +11,7 @@ function Home() {
         <img src={profilePic} alt="Jesse Mashoana" className="profile-pic" />
         <img src={logo} alt="Logo" className="logo" />
       </div>
-      <ColorLine /> {/* Use the ColorLine component */}
+      <ColorLine /> 
       <p>
         Welcome to my portfolio! I am a dedicated and results-driven Junior Developer with a passion for crafting functional, user-friendly, and visually engaging applications. My goal is to create innovative solutions that address real-world challenges, combining creativity with technical expertise.
       </p>

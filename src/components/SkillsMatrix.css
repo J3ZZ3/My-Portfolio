@@ -112,8 +112,11 @@
   
   .skill-item {
     padding: 1rem;
+    width: 100%;
   }
 }
+
+
 
 /* Animation for progress bars */
 @keyframes progressAnimation {
