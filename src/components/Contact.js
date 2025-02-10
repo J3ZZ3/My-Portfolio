@@ -15,7 +15,7 @@ function Contact() {
         <a href="https://github.com/J3ZZ3" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
           <FontAwesomeIcon icon={faGithub} size="5x" />
         </a>
-        <a href="https://www.linkedin.com/in/jesse-mashoana/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+        <a href="https://www.linkedin.com/in/jesse-mashoana-47b4882b8/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
           <FontAwesomeIcon icon={faLinkedin} size="5x" />
         </a>
       </div>
