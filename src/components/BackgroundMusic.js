@@ -8,7 +8,9 @@ import song5 from './audio/song5.mp3';
 
 function BackgroundMusic() {
   const [isPlaying, setIsPlaying] = useState(true);
-  const [currentSongIndex, setCurrentSongIndex] = useState(0);
+  const [currentSongIndex, setCurrentSongIndex] = useState(
+    Math.floor(Math.random() * 5) 
+  );
   const audioRef = useRef(null);
 
   const songs = [
@@ -34,6 +36,13 @@ function BackgroundMusic() {
     }
   ];
 
+  // Function to get next random song index
+  const getRandomSongIndex = useCallback((currentIndex) => {
+    const newIndex = Math.floor(Math.random() * songs.length);
+    // Ensure we don't play the same song twice in a row
+    return newIndex === currentIndex ? getRandomSongIndex(currentIndex) : newIndex;
+  }, [songs.length]);
+
   useEffect(() => {
     const audio = audioRef.current;
     
@@ -52,7 +61,7 @@ function BackgroundMusic() {
     playAudio();
 
     const handleSongEnd = () => {
-      setCurrentSongIndex((prev) => (prev + 1) % songs.length);
+      setCurrentSongIndex(prevIndex => getRandomSongIndex(prevIndex));
     };
 
     audio.addEventListener('ended', handleSongEnd);
@@ -61,7 +70,7 @@ function BackgroundMusic() {
       audio.removeEventListener('ended', handleSongEnd);
       audio.pause();
     };
-  }, [songs.length]);
+  }, [getRandomSongIndex]);
 
   useEffect(() => {
     const audio = audioRef.current;
