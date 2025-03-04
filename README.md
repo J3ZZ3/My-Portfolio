@@ -2,7 +2,7 @@
 
 A modern, responsive portfolio  built with React.js to showcase projects and skills.
 
-[Live](loganjesse.vercel.app)
+[Live](https://loganjesse.vercel.app/)
 
 ## 🚀 Features
 
