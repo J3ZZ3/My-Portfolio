@@ -2,6 +2,8 @@
 
 A modern, responsive portfolio  built with React.js to showcase projects and skills.
 
+LiveDemo[loganjesse.vercel.app]
+
 ## 🚀 Features
 
 - Responsive design that works on all devices (desktop, tablet, and mobile)
