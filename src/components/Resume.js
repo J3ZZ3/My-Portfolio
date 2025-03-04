@@ -7,7 +7,7 @@ function Resume() {
       <h2>📄 Resume</h2>
       <div className="resume-content">
         <div className="resume-header">
-          <p>Junior Developer Trainee</p>
+          <p>Web And Mobile Developer</p>
           <p>Location: Pretoria</p>
           <p>Program: CodeTribe</p>
         </div>
