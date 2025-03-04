@@ -13,7 +13,7 @@ function Resume() {
         </div>
         
         <div className="resume-download">
-          <a href="https://drive.google.com/file/d/1XwhKwkeplYalkBMwF79RjFJEHNqGuuk-/view"
+          <a href="https://drive.google.com/file/d/1v8zyimGNZqHnD96dnuA3E7OxEq1p3q1A/view?usp=drive_link"
              className="download-btn"
              target="_blank" 
              rel="noopener noreferrer">
