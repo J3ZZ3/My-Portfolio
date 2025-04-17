@@ -29,7 +29,7 @@ function Projects() {
       description: "A modern, responsive weather app that provides real-time weather information, hourly forecasts, and weekly forecasts.",
       stack: "React, Css, WeatherAPI.com, Axios",
       link: "https://github.com/J3ZZ3/weather-app",
-      demo: "https://weatherapp-sage-sigma.vercel.app/",
+      demo: "https://weatherapplj.vercel.app/",
     }
   ];
 
