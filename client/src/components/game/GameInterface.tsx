@@ -6,6 +6,7 @@ import { QuestLog } from "./QuestLog";
 import { SkillTree } from "./SkillTree";
 import { CommsView } from "./CommsView";
 import { MiniGame } from "./MiniGame";
+import { ArcadeView } from "./ArcadeView";
 
 interface GameInterfaceProps {
   onLogout: () => void;
@@ -106,7 +107,7 @@ export function GameInterface({ onLogout }: GameInterfaceProps) {
               {activeTab === "profile" && <ProfileView />}
               {activeTab === "quests" && <QuestLog />}
               {activeTab === "skills" && <SkillTree />}
-              {activeTab === "arcade" && <MiniGame />}
+              {activeTab === "arcade" && <ArcadeView />}
               {activeTab === "comms" && <CommsView />}
             </motion.div>
           </AnimatePresence>
