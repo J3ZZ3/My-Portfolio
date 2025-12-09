@@ -30,11 +30,11 @@ export function StartScreen({ onStart }: StartScreenProps) {
           transition={{ duration: 1, type: "spring" }}
           className="text-center space-y-4"
         >
-          <h1 className="text-6xl md:text-8xl font-pixel text-transparent bg-clip-text bg-gradient-to-b from-primary to-emerald-800 animate-pulse filter drop-shadow-[0_0_10px_rgba(0,255,0,0.5)]">
+          <h1 className="text-4xl md:text-8xl font-pixel text-transparent bg-clip-text bg-gradient-to-b from-primary to-emerald-800 animate-pulse filter drop-shadow-[0_0_10px_rgba(0,255,0,0.5)]">
             PLAYER ONE
           </h1>
-          <p className="text-xl md:text-2xl font-hud text-secondary tracking-[0.5em] uppercase">
-            Full Stack Developer Portfolio
+          <p className="text-lg md:text-2xl font-hud text-secondary tracking-[0.2em] md:tracking-[0.5em] uppercase">
+            Web & Mobile Developer
           </p>
         </motion.div>
 
