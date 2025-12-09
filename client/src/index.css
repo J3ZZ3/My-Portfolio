@@ -40,7 +40,19 @@
 @layer base {
   * {
     @apply border-border;
+    cursor: crosshair; /* Fallback */
   }
+  
+  /* Custom Crosshair Cursor */
+  html, body, button, a, input, textarea {
+    cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%2300ff00' stroke-width='2'><line x1='12' y1='0' x2='12' y2='24'/><line x1='0' y1='12' x2='24' y2='12'/></svg>") 12 12, auto;
+  }
+
+  /* Pointer for interactive elements */
+  button:hover, a:hover, input:hover {
+     cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23ff00ff' stroke-width='2'><circle cx='12' cy='12' r='10'/><line x1='12' y1='0' x2='12' y2='24'/><line x1='0' y1='12' x2='24' y2='12'/></svg>") 12 12, pointer;
+  }
+
   body {
     @apply font-share-tech antialiased bg-background text-foreground overflow-hidden;
     background-color: var(--color-background);

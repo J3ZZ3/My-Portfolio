@@ -1,27 +1,21 @@
 import { motion } from "framer-motion";
 import { Play } from "lucide-react";
-import gridBg from "@assets/generated_images/retro_synthwave_grid_background.png";
+import { BackgroundVideo } from "./BackgroundVideo";
+import { audio } from "@/lib/audio";
 
 interface StartScreenProps {
   onStart: () => void;
 }
 
 export function StartScreen({ onStart }: StartScreenProps) {
+  const handleStart = () => {
+    audio.playStart();
+    onStart();
+  };
+
   return (
     <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black overflow-hidden">
-      {/* Background Image */}
-      <div 
-        className="absolute inset-0 opacity-40 z-0"
-        style={{
-          backgroundImage: `url(${gridBg})`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          filter: 'hue-rotate(45deg)' // Shift to purple/green
-        }}
-      />
-      
-      {/* Grid Animation Overlay */}
-      <div className="absolute inset-0 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] z-10 bg-[length:100%_2px,3px_100%] pointer-events-none" />
+      <BackgroundVideo />
 
       <div className="z-20 flex flex-col items-center gap-12">
         <motion.div
@@ -41,7 +35,8 @@ export function StartScreen({ onStart }: StartScreenProps) {
         <motion.button
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.95 }}
-          onClick={onStart}
+          onMouseEnter={() => audio.playHover()}
+          onClick={handleStart}
           className="group relative px-8 py-4 bg-transparent overflow-hidden"
         >
           <div className="absolute inset-0 border-4 border-primary/50 group-hover:border-primary transition-colors" />

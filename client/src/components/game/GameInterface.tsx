@@ -7,6 +7,7 @@ import { SkillTree } from "./SkillTree";
 import { CommsView } from "./CommsView";
 import { MiniGame } from "./MiniGame";
 import { ArcadeView } from "./ArcadeView";
+import { audio } from "@/lib/audio";
 
 interface GameInterfaceProps {
   onLogout: () => void;
@@ -22,6 +23,18 @@ export function GameInterface({ onLogout }: GameInterfaceProps) {
     { id: "arcade", label: "ARCADE", icon: Gamepad2, color: "text-yellow-400" },
     { id: "comms", label: "COMMS", icon: MessageSquare, color: "text-white" },
   ] as const;
+
+  const handleTabChange = (id: typeof activeTab) => {
+    if (id !== activeTab) {
+      audio.playClick();
+      setActiveTab(id);
+    }
+  };
+
+  const handleLogout = () => {
+    audio.playBack();
+    onLogout();
+  };
 
   return (
     <div className="flex h-screen w-screen p-4 md:p-8 gap-4 overflow-hidden relative z-10">
@@ -40,9 +53,10 @@ export function GameInterface({ onLogout }: GameInterfaceProps) {
           {menuItems.map((item) => (
             <button
               key={item.id}
-              onClick={() => setActiveTab(item.id as any)}
+              onClick={() => handleTabChange(item.id as any)}
+              onMouseEnter={() => audio.playHover()}
               className={`
-                relative px-4 py-3 flex items-center gap-4 transition-all
+                relative px-4 py-3 flex items-center gap-4 transition-all w-full text-left
                 ${activeTab === item.id ? 'bg-primary/20 border-r-4 border-primary' : 'hover:bg-white/5'}
               `}
             >
@@ -58,7 +72,8 @@ export function GameInterface({ onLogout }: GameInterfaceProps) {
         </nav>
 
         <button 
-          onClick={onLogout}
+          onClick={handleLogout}
+          onMouseEnter={() => audio.playHover()}
           className="p-4 border-t-2 border-red-500/30 hover:bg-red-500/20 text-red-500 flex items-center justify-center gap-2 transition-colors group"
         >
           <Power className="w-6 h-6 group-hover:scale-110 transition-transform" />
