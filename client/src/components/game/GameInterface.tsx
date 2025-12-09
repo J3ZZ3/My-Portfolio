@@ -1,22 +1,24 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { User, Sword, Zap, MessageSquare, Power } from "lucide-react";
+import { User, Sword, Zap, MessageSquare, Power, Gamepad2 } from "lucide-react";
 import { ProfileView } from "./ProfileView";
 import { QuestLog } from "./QuestLog";
 import { SkillTree } from "./SkillTree";
 import { CommsView } from "./CommsView";
+import { MiniGame } from "./MiniGame";
 
 interface GameInterfaceProps {
   onLogout: () => void;
 }
 
 export function GameInterface({ onLogout }: GameInterfaceProps) {
-  const [activeTab, setActiveTab] = useState<"profile" | "quests" | "skills" | "comms">("profile");
+  const [activeTab, setActiveTab] = useState<"profile" | "quests" | "skills" | "comms" | "arcade">("profile");
 
   const menuItems = [
     { id: "profile", label: "PROFILE", icon: User, color: "text-primary" },
     { id: "quests", label: "QUESTS", icon: Sword, color: "text-secondary" },
     { id: "skills", label: "SKILLS", icon: Zap, color: "text-accent" },
+    { id: "arcade", label: "ARCADE", icon: Gamepad2, color: "text-yellow-400" },
     { id: "comms", label: "COMMS", icon: MessageSquare, color: "text-white" },
   ] as const;
 
@@ -37,7 +39,7 @@ export function GameInterface({ onLogout }: GameInterfaceProps) {
           {menuItems.map((item) => (
             <button
               key={item.id}
-              onClick={() => setActiveTab(item.id)}
+              onClick={() => setActiveTab(item.id as any)}
               className={`
                 relative px-4 py-3 flex items-center gap-4 transition-all
                 ${activeTab === item.id ? 'bg-primary/20 border-r-4 border-primary' : 'hover:bg-white/5'}
@@ -104,6 +106,7 @@ export function GameInterface({ onLogout }: GameInterfaceProps) {
               {activeTab === "profile" && <ProfileView />}
               {activeTab === "quests" && <QuestLog />}
               {activeTab === "skills" && <SkillTree />}
+              {activeTab === "arcade" && <MiniGame />}
               {activeTab === "comms" && <CommsView />}
             </motion.div>
           </AnimatePresence>
