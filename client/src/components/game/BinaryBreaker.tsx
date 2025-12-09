@@ -9,6 +9,9 @@ export function BinaryBreaker() {
   const [gameOver, setGameOver] = useState(false);
   const [lives, setLives] = useState(3);
 
+  // Keyboard state
+  const keysPressed = useRef<{ [key: string]: boolean }>({});
+
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -30,6 +33,8 @@ export function BinaryBreaker() {
     const brickPadding = 10;
     const brickOffsetTop = 30;
     const brickOffsetLeft = 30;
+    const paddleWidth = 100;
+    const paddleSpeed = 7;
 
     interface Brick {
       x: number;
@@ -66,7 +71,7 @@ export function BinaryBreaker() {
 
     const drawPaddle = () => {
       ctx.beginPath();
-      ctx.rect(paddleX, canvas.height - 15, 100, 15);
+      ctx.rect(paddleX, canvas.height - 15, paddleWidth, 15);
       ctx.fillStyle = "#00ffff";
       ctx.shadowBlur = 10;
       ctx.shadowColor = "#00ffff";
@@ -118,6 +123,13 @@ export function BinaryBreaker() {
     const draw = () => {
       if (!isPlaying) return;
 
+      // Update paddle position based on keyboard input
+      if ((keysPressed.current["ArrowRight"] || keysPressed.current["d"]) && paddleX < canvas.width - paddleWidth) {
+        paddleX += paddleSpeed;
+      } else if ((keysPressed.current["ArrowLeft"] || keysPressed.current["a"]) && paddleX > 0) {
+        paddleX -= paddleSpeed;
+      }
+
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       
       drawBricks();
@@ -132,11 +144,11 @@ export function BinaryBreaker() {
       if (ballY + dy < 6) {
         dy = -dy;
       } else if (ballY + dy > canvas.height - 6) {
-        if (ballX > paddleX && ballX < paddleX + 100) {
+        if (ballX > paddleX && ballX < paddleX + paddleWidth) {
           dy = -dy;
           // Add some angle variation based on where it hit the paddle
-          const hitPoint = ballX - (paddleX + 50);
-          dx = hitPoint * 0.1;
+          const hitPoint = ballX - (paddleX + paddleWidth / 2);
+          dx = hitPoint * 0.15;
         } else {
           // Game Over logic
           handleGameOver();
@@ -161,7 +173,7 @@ export function BinaryBreaker() {
     const mouseMoveHandler = (e: MouseEvent) => {
       const relativeX = e.clientX - canvas.offsetLeft;
       if (relativeX > 0 && relativeX < canvas.width) {
-        paddleX = relativeX - 50;
+        paddleX = relativeX - paddleWidth / 2;
       }
     };
     
@@ -172,20 +184,32 @@ export function BinaryBreaker() {
       const rect = canvas.getBoundingClientRect();
       const relativeX = touch.clientX - rect.left;
       if (relativeX > 0 && relativeX < canvas.width) {
-        paddleX = relativeX - 50;
+        paddleX = relativeX - paddleWidth / 2;
       }
+    };
+
+    const keyDownHandler = (e: KeyboardEvent) => {
+      keysPressed.current[e.key] = true;
+    };
+
+    const keyUpHandler = (e: KeyboardEvent) => {
+      keysPressed.current[e.key] = false;
     };
 
     if (isPlaying) {
       draw();
       document.addEventListener("mousemove", mouseMoveHandler);
       canvas.addEventListener("touchmove", touchMoveHandler, { passive: false });
+      window.addEventListener("keydown", keyDownHandler);
+      window.addEventListener("keyup", keyUpHandler);
     }
 
     return () => {
       cancelAnimationFrame(animationFrameId);
       document.removeEventListener("mousemove", mouseMoveHandler);
       canvas.removeEventListener("touchmove", touchMoveHandler);
+      window.removeEventListener("keydown", keyDownHandler);
+      window.removeEventListener("keyup", keyUpHandler);
     };
   }, [isPlaying, gameOver]);
 
@@ -214,7 +238,7 @@ export function BinaryBreaker() {
         {!isPlaying && !gameOver && (
           <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/70 backdrop-blur-sm z-10">
             <h2 className="text-4xl font-pixel text-accent mb-4 text-glow">BINARY<br/>BREAKER</h2>
-            <p className="text-muted-foreground mb-8 font-terminal text-xl">USE MOUSE TO DEFLECT DATA PACKETS</p>
+            <p className="text-muted-foreground mb-8 font-terminal text-xl">USE MOUSE OR A/D/ARROWS TO DEFLECT</p>
             <button 
               onClick={() => {
                 setScore(0);
@@ -247,6 +271,7 @@ export function BinaryBreaker() {
       
       <div className="mt-6 text-accent font-terminal text-sm text-center max-w-lg">
         <p>&gt; INSTRUCTIONS: BREAK FIREWALL BLOCKS TO ACCESS DATA.</p>
+        <p>&gt; CONTROLS: MOUSE OR KEYBOARD (A/D/Left/Right)</p>
       </div>
     </div>
   );
