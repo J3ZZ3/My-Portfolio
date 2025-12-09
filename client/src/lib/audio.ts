@@ -81,6 +81,44 @@ class AudioController {
        this.playTone(freq, 'square', 0.2, i * 0.1);
     });
   }
+
+  playCrash() {
+    if (!this.ctx || !this.masterGain) return;
+    
+    // Create noise buffer
+    const bufferSize = this.ctx.sampleRate * 1.5; // 1.5 seconds
+    const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+    const data = buffer.getChannelData(0);
+    
+    for (let i = 0; i < bufferSize; i++) {
+      data[i] = Math.random() * 2 - 1;
+    }
+
+    const noise = this.ctx.createBufferSource();
+    noise.buffer = buffer;
+    
+    const noiseGain = this.ctx.createGain();
+    noiseGain.gain.setValueAtTime(0.5, this.ctx.currentTime);
+    noiseGain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 1.5);
+    
+    noise.connect(noiseGain);
+    noiseGain.connect(this.masterGain);
+    noise.start();
+    
+    // Add descending tone
+    this.playTone(880, 'sawtooth', 1.5);
+    const osc = this.ctx.createOscillator();
+    osc.frequency.setValueAtTime(880, this.ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(55, this.ctx.currentTime + 1.5);
+    const gain = this.ctx.createGain();
+    gain.gain.setValueAtTime(0.2, this.ctx.currentTime);
+    gain.gain.linearRampToValueAtTime(0, this.ctx.currentTime + 1.5);
+    
+    osc.connect(gain);
+    gain.connect(this.masterGain);
+    osc.start();
+    osc.stop(this.ctx.currentTime + 1.5);
+  }
 }
 
 export const audio = new AudioController();
