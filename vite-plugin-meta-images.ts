@@ -16,27 +16,30 @@ export function metaImagesPlugin(): Plugin {
         return html;
       }
 
-      // Check if opengraph image exists in public directory
+      // Prefer the custom logo image and fall back to opengraph files.
       const publicDir = path.resolve(process.cwd(), 'client', 'public');
+      const kojiPngPath = path.join(publicDir, 'koji.png');
       const opengraphPngPath = path.join(publicDir, 'opengraph.png');
       const opengraphJpgPath = path.join(publicDir, 'opengraph.jpg');
       const opengraphJpegPath = path.join(publicDir, 'opengraph.jpeg');
 
-      let imageExt: string | null = null;
-      if (fs.existsSync(opengraphPngPath)) {
-        imageExt = 'png';
+      let imageName: string | null = null;
+      if (fs.existsSync(kojiPngPath)) {
+        imageName = 'koji.png';
+      } else if (fs.existsSync(opengraphPngPath)) {
+        imageName = 'opengraph.png';
       } else if (fs.existsSync(opengraphJpgPath)) {
-        imageExt = 'jpg';
+        imageName = 'opengraph.jpg';
       } else if (fs.existsSync(opengraphJpegPath)) {
-        imageExt = 'jpeg';
+        imageName = 'opengraph.jpeg';
       }
 
-      if (!imageExt) {
-        log('[meta-images] OpenGraph image not found, skipping meta tag updates');
+      if (!imageName) {
+        log('[meta-images] share image not found, skipping meta tag updates');
         return html;
       }
 
-      const imageUrl = `${baseUrl}/opengraph.${imageExt}`;
+      const imageUrl = `${baseUrl}/${imageName}`;
 
       log('[meta-images] updating meta image tags to:', imageUrl);
 

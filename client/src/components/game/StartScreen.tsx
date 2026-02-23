@@ -41,9 +41,11 @@ export function StartScreen({ onStart }: StartScreenProps) {
           transition={{ duration: 1, type: "spring" }}
           className="text-center space-y-4"
         >
-          <h1 className="text-4xl md:text-8xl font-pixel text-transparent bg-clip-text bg-gradient-to-b from-primary to-emerald-800 animate-pulse filter drop-shadow-[0_0_10px_rgba(0,255,0,0.5)]">
-            REWORK
-          </h1>
+          <img
+            src="/koji.png"
+            alt="Koji logo"
+            className="mx-auto w-40 md:w-72 h-auto animate-pulse drop-shadow-[0_0_10px_rgba(0,255,0,0.5)]"
+          />
           <p className="text-lg md:text-2xl font-hud text-secondary tracking-[0.15em] md:tracking-[0.4em] uppercase">
             BY KOJI
           </p>
