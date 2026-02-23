@@ -1,0 +1,65 @@
+{
+  "quests": [
+    {
+      "id": 1,
+      "title": "ONLINE MARKETPLACE",
+      "desc": "A React and Node.js-based marketplace for users to buy and sell products.",
+      "status": "complete",
+      "completed": true,
+      "online": true,
+      "tech": ["React.js", "Node.js", "Firebase", "Redux"],
+      "links": {
+        "demo": true,
+        "view": true,
+        "demoUrl": "https://example.com/marketplace/demo",
+        "viewUrl": "https://example.com/marketplace"
+      }
+    },
+    {
+      "id": 2,
+      "title": "EMPLOYEE MANAGEMENT SYS",
+      "desc": "A CRUD application to manage employee details with authentication and admin functionalities.",
+      "status": "complete",
+      "completed": true,
+      "online": true,
+      "tech": ["React.js", "Firebase", "Node.js", "Express.js"],
+      "links": {
+        "demo": true,
+        "view": true,
+        "demoUrl": "https://example.com/ems/demo",
+        "viewUrl": "https://example.com/ems"
+      }
+    },
+    {
+      "id": 3,
+      "title": "AUDIO RECORDER APP",
+      "desc": "A React Native app for recording and managing voice notes.",
+      "status": "complete",
+      "completed": true,
+      "online": false,
+      "tech": ["React Native"],
+      "links": {
+        "demo": true,
+        "view": true,
+        "demoUrl": "https://example.com/audio-recorder/demo",
+        "viewUrl": "https://example.com/audio-recorder"
+      }
+    },
+    {
+      "id": 4,
+      "title": "WEATHER APP",
+      "desc": "Modern app providing real-time weather information, hourly forecasts, and weekly forecasts.",
+      "status": "complete",
+      "completed": true,
+      "online": true,
+      "tech": ["React", "CSS", "WeatherAPI", "Axios"],
+      "links": {
+        "demo": true,
+        "view": true,
+        "demoUrl": "https://example.com/weather/demo",
+        "viewUrl": "https://example.com/weather"
+      }
+    }
+  ]
+}
+

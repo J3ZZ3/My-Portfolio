@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
-import { Play } from "lucide-react";
+import { Play, RefreshCw } from "lucide-react";
+import { useState } from "react";
 import { BackgroundVideo } from "./BackgroundVideo";
 import { audio } from "@/lib/audio";
 
@@ -8,6 +9,12 @@ interface StartScreenProps {
 }
 
 export function StartScreen({ onStart }: StartScreenProps) {
+  const [bgCycleKey, setBgCycleKey] = useState(0);
+
+  const handleCycleBg = () => {
+    setBgCycleKey((n) => n + 1);
+  };
+
   const handleStart = () => {
     audio.playStart();
     onStart();
@@ -15,7 +22,17 @@ export function StartScreen({ onStart }: StartScreenProps) {
 
   return (
     <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black overflow-hidden">
-      <BackgroundVideo />
+      <BackgroundVideo cycleKey={bgCycleKey} />
+
+      <div className="absolute top-4 right-4 z-30 flex gap-2">
+        <button
+          onClick={handleCycleBg}
+          className="px-3 py-2 border border-primary/40 text-primary font-mono text-xs bg-black/40 hover:bg-primary/10 transition-colors flex items-center gap-2"
+        >
+          <RefreshCw className="w-4 h-4" />
+          CHANGE BG
+        </button>
+      </div>
 
       <div className="z-20 flex flex-col items-center gap-12">
         <motion.div
@@ -25,10 +42,10 @@ export function StartScreen({ onStart }: StartScreenProps) {
           className="text-center space-y-4"
         >
           <h1 className="text-4xl md:text-8xl font-pixel text-transparent bg-clip-text bg-gradient-to-b from-primary to-emerald-800 animate-pulse filter drop-shadow-[0_0_10px_rgba(0,255,0,0.5)]">
-            PLAYER ONE
+            REWORK
           </h1>
-          <p className="text-lg md:text-2xl font-hud text-secondary tracking-[0.2em] md:tracking-[0.5em] uppercase">
-            Web & Mobile Developer
+          <p className="text-lg md:text-2xl font-hud text-secondary tracking-[0.15em] md:tracking-[0.4em] uppercase">
+            BY KOJI
           </p>
         </motion.div>
 

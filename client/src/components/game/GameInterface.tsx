@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { User, Sword, Zap, MessageSquare, Power, Gamepad2 } from "lucide-react";
+import menuData from "@/data/menu.json";
 import { ProfileView } from "./ProfileView";
 import { QuestLog } from "./QuestLog";
 import { SkillTree } from "./SkillTree";
@@ -11,18 +12,23 @@ import { audio } from "@/lib/audio";
 
 interface GameInterfaceProps {
   onLogout: () => void;
+  musicMuted: boolean;
+  musicVolume: number;
+  onToggleMute: () => void;
+  onVolumeChange: (value: number) => void;
 }
 
-export function GameInterface({ onLogout }: GameInterfaceProps) {
+export function GameInterface({
+  onLogout,
+  musicMuted,
+  musicVolume,
+  onToggleMute,
+  onVolumeChange,
+}: GameInterfaceProps) {
   const [activeTab, setActiveTab] = useState<"profile" | "quests" | "skills" | "comms" | "arcade">("profile");
 
-  const menuItems = [
-    { id: "profile", label: "PROFILE", icon: User, color: "text-primary" },
-    { id: "quests", label: "QUESTS", icon: Sword, color: "text-secondary" },
-    { id: "skills", label: "SKILLS", icon: Zap, color: "text-accent" },
-    { id: "arcade", label: "ARCADE", icon: Gamepad2, color: "text-yellow-400" },
-    { id: "comms", label: "COMMS", icon: MessageSquare, color: "text-white" },
-  ] as const;
+  const iconMap = { User, Sword, Zap, Gamepad2, MessageSquare } as const;
+  const menuItems = menuData.items;
 
   const handleTabChange = (id: typeof activeTab) => {
     if (id !== activeTab) {
@@ -50,7 +56,9 @@ export function GameInterface({ onLogout }: GameInterfaceProps) {
         </div>
         
         <nav className="flex-1 py-8 flex flex-col gap-4">
-          {menuItems.map((item) => (
+          {menuItems.map((item) => {
+            const Icon = iconMap[item.icon as keyof typeof iconMap] ?? User;
+            return (
             <button
               key={item.id}
               onClick={() => handleTabChange(item.id as any)}
@@ -60,7 +68,7 @@ export function GameInterface({ onLogout }: GameInterfaceProps) {
                 ${activeTab === item.id ? 'bg-primary/20 border-r-4 border-primary' : 'hover:bg-white/5'}
               `}
             >
-              <item.icon className={`w-6 h-6 ${item.color}`} />
+              <Icon className={`w-6 h-6 ${item.color}`} />
               <span className={`hidden md:block font-hud text-xl tracking-wider ${activeTab === item.id ? 'text-white' : 'text-muted-foreground'}`}>
                 {item.label}
               </span>
@@ -68,8 +76,32 @@ export function GameInterface({ onLogout }: GameInterfaceProps) {
                 <motion.div layoutId="active-indicator" className="absolute left-0 top-0 bottom-0 w-1 bg-primary" />
               )}
             </button>
-          ))}
+            );
+          })}
         </nav>
+
+        <div className="px-3 pb-4">
+          <div className="flex items-center gap-3 bg-black/70 border border-primary/40 px-3 py-2 rounded">
+            <button
+              onClick={onToggleMute}
+              className="text-[10px] font-mono px-2 py-1 border border-primary/50 text-primary hover:bg-primary/10 transition-colors w-16"
+            >
+              {musicMuted ? "UNMUTE" : "MUTE"}
+            </button>
+            <label className="flex items-center gap-2 text-[10px] font-mono text-primary flex-1">
+              VOL
+              <input
+                type="range"
+                min={0}
+                max={1}
+                step={0.05}
+                value={musicVolume}
+                onChange={(e) => onVolumeChange(Number(e.target.value))}
+                className="h-1 accent-primary w-full"
+              />
+            </label>
+          </div>
+        </div>
 
         <button 
           onClick={handleLogout}

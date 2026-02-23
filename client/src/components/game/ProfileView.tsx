@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
-import { User, Shield, Zap, Brain, Terminal, MapPin, GraduationCap } from "lucide-react";
+import { Shield, Zap, Brain, Terminal, MapPin, GraduationCap } from "lucide-react";
 import avatarImage from "@assets/generated_images/pixel_art_cyberpunk_avatar.png";
+import profileData from "@/data/profile.json";
 
 export function ProfileView() {
   return (
@@ -10,7 +11,7 @@ export function ProfileView() {
         <motion.div 
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="w-full md:w-1/3 flex flex-col items-center"
+          className="w-full md:w-1/3 flex flex-col items-start"
         >
           <div className="relative w-48 h-48 mb-4 border-4 border-primary p-1 bg-black/50">
             <img 
@@ -20,27 +21,27 @@ export function ProfileView() {
             />
             <div className="absolute top-0 left-0 w-full h-full bg-primary/10 pointer-events-none" />
             <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 bg-primary text-black px-2 py-1 font-pixel text-xs whitespace-nowrap">
-              LVL. 1 JUNIOR DEV
+              {profileData.avatarLabel}
             </div>
           </div>
           
           <div className="w-full mt-4 space-y-2 font-hud">
-            <div className="flex justify-between text-primary">
-              <span>HP</span>
+            <div className="flex items-center gap-3 text-primary">
+              <span className="min-w-[32px]">HP</span>
               <div className="w-32 h-4 border border-primary p-0.5">
-                <div className="h-full bg-primary w-[90%] animate-pulse" />
+                <div className="h-full bg-primary" style={{ width: `${profileData.stats.hp}%` }} />
               </div>
             </div>
-            <div className="flex justify-between text-secondary">
-              <span>MP</span>
+            <div className="flex items-center gap-3 text-secondary">
+              <span className="min-w-[32px]">MP</span>
               <div className="w-32 h-4 border border-secondary p-0.5">
-                <div className="h-full bg-secondary w-[85%]" />
+                <div className="h-full bg-secondary" style={{ width: `${profileData.stats.mp}%` }} />
               </div>
             </div>
-            <div className="flex justify-between text-accent">
-              <span>XP</span>
+            <div className="flex items-center gap-3 text-accent">
+              <span className="min-w-[32px]">XP</span>
               <div className="w-32 h-4 border border-accent p-0.5">
-                <div className="h-full bg-accent w-[75%]" />
+                <div className="h-full bg-accent" style={{ width: `${profileData.stats.xp}%` }} />
               </div>
             </div>
           </div>
@@ -48,11 +49,11 @@ export function ProfileView() {
           <div className="mt-6 w-full space-y-2 font-hud text-sm">
              <div className="flex items-center gap-2 text-muted-foreground">
                 <MapPin className="w-4 h-4 text-primary" />
-                <span>LOC: PRETORIA</span>
+                <span>LOC: {profileData.location}</span>
              </div>
              <div className="flex items-center gap-2 text-muted-foreground">
                 <GraduationCap className="w-4 h-4 text-secondary" />
-                <span>GUILD: CODETRIBE</span>
+                <span>GUILD: {profileData.guild}</span>
              </div>
           </div>
         </motion.div>

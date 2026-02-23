@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Gamepad2, Brain, Activity } from "lucide-react";
+import arcadeData from "@/data/arcade.json";
 import { CyberRun } from "./CyberRun";
 import { MemoryMatrix } from "./MemoryMatrix";
 import { BinaryBreaker } from "./BinaryBreaker";
@@ -14,41 +15,27 @@ export function ArcadeView() {
 
   return (
     <div className="h-full w-full p-6 overflow-y-auto font-terminal">
-      <h2 className="text-2xl font-pixel text-yellow-400 mb-8 flex items-center gap-4">
-        <Gamepad2 className="w-8 h-8" />
-        ARCADE_SYSTEM
+      <h2 className="text-xl md:text-2xl leading-tight font-pixel text-yellow-400 mb-8 flex flex-wrap items-center gap-2 md:gap-4">
+        <Gamepad2 className="w-6 h-6 md:w-8 md:h-8" />
+        <span className="break-words">ARCADE_SYSTEM</span>
       </h2>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {/* Game 1: Cyber Run */}
+        {arcadeData.games.map((game) => {
+          const iconMap = { Activity, Brain, Gamepad2 };
+          const Icon = iconMap[game.icon as keyof typeof iconMap] ?? Gamepad2;
+          return (
         <GameCard 
-          title="CYBER_RUN" 
-          icon={Activity} 
-          desc="Endless runner. Compile code by avoiding bugs."
-          color="text-primary"
-          borderColor="border-primary"
-          onClick={() => setSelectedGame("run")}
+              key={game.id}
+              title={game.title}
+              icon={Icon}
+              desc={game.desc}
+              color={game.color}
+              borderColor={game.borderColor}
+              onClick={() => setSelectedGame(game.id as any)}
         />
-
-        {/* Game 2: Memory Matrix */}
-        <GameCard 
-          title="MEMORY_MATRIX" 
-          icon={Brain} 
-          desc="Pattern recognition test. Enhance cognitive RAM."
-          color="text-secondary"
-          borderColor="border-secondary"
-          onClick={() => setSelectedGame("memory")}
-        />
-
-        {/* Game 3: Binary Breaker */}
-        <GameCard 
-          title="BINARY_BREAKER" 
-          icon={Gamepad2} 
-          desc="Breakout clone. Smash through firewalls."
-          color="text-accent"
-          borderColor="border-accent"
-          onClick={() => setSelectedGame("breaker")}
-        />
+          );
+        })}
       </div>
     </div>
   );
@@ -65,16 +52,12 @@ function GameCard({ title, icon: Icon, desc, color, borderColor, onClick }: any)
         hover:bg-white/5 transition-colors h-64 flex flex-col justify-between
       `}
     >
-      <div>
+      <div className="space-y-2">
         <Icon className={`w-12 h-12 ${color} mb-4`} />
-        <h3 className={`text-xl font-bold font-pixel ${color} mb-2`}>{title}</h3>
-        <p className="text-muted-foreground font-hud text-sm">{desc}</p>
-      </div>
-      <div className={`
-        text-xs font-mono px-2 py-1 border ${borderColor} ${color} w-fit
-        group-hover:bg-white/10
-      `}>
-        INSERT COIN
+        <h3 className={`text-lg md:text-xl leading-tight font-bold font-pixel ${color} break-words`}>
+          {title}
+        </h3>
+        <p className="text-muted-foreground font-hud text-sm leading-snug">{desc}</p>
       </div>
     </motion.button>
   );

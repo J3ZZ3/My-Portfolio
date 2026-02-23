@@ -1,0 +1,29 @@
+{
+  "games": [
+    {
+      "id": "run",
+      "title": "CYBER_RUN",
+      "desc": "Endless runner. Compile code by avoiding bugs.",
+      "icon": "Activity",
+      "color": "text-primary",
+      "borderColor": "border-primary"
+    },
+    {
+      "id": "memory",
+      "title": "MEMORY_MATRIX",
+      "desc": "Pattern recognition test. Enhance cognitive RAM.",
+      "icon": "Brain",
+      "color": "text-secondary",
+      "borderColor": "border-secondary"
+    },
+    {
+      "id": "breaker",
+      "title": "BINARY_BREAKER",
+      "desc": "Breakout clone. Smash through firewalls.",
+      "icon": "Gamepad2",
+      "color": "text-accent",
+      "borderColor": "border-accent"
+    }
+  ]
+}
+

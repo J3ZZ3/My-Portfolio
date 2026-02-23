@@ -22,7 +22,9 @@ export function CommsView() {
 
   return (
     <div className="h-full w-full p-6 flex flex-col font-terminal">
-      <h2 className="text-2xl font-pixel text-primary mb-6">ESTABLISH_UPLINK</h2>
+      <h2 className="text-xl md:text-2xl leading-tight font-pixel text-primary mb-6 break-words">
+        ESTABLISH_UPLINK
+      </h2>
 
       <div className="flex-1 border-2 border-primary/30 bg-black/50 p-4 mb-4 overflow-hidden relative">
         <div className="absolute top-2 right-2 flex gap-1">

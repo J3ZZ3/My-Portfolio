@@ -4,7 +4,7 @@ import path from 'path';
 
 /**
  * Vite plugin that updates og:image and twitter:image meta tags
- * to point to the app's opengraph image with the correct Replit domain.
+ * to point to the app's opengraph image with the correct deployment domain.
  */
 export function metaImagesPlugin(): Plugin {
   return {
@@ -12,7 +12,7 @@ export function metaImagesPlugin(): Plugin {
     transformIndexHtml(html) {
       const baseUrl = getDeploymentUrl();
       if (!baseUrl) {
-        log('[meta-images] no Replit deployment domain found, skipping meta tag updates');
+        log('[meta-images] no deployment domain found, skipping meta tag updates');
         return html;
       }
 
@@ -56,16 +56,22 @@ export function metaImagesPlugin(): Plugin {
 }
 
 function getDeploymentUrl(): string | null {
-  if (process.env.REPLIT_INTERNAL_APP_DOMAIN) {
-    const url = `https://${process.env.REPLIT_INTERNAL_APP_DOMAIN}`;
-    log('[meta-images] using internal app domain:', url);
+  // Use Vercel deployment URL if available
+  if (process.env.VERCEL_URL) {
+    const url = `https://${process.env.VERCEL_URL}`;
+    log('[meta-images] using Vercel deployment URL:', url);
     return url;
   }
 
-  if (process.env.REPLIT_DEV_DOMAIN) {
-    const url = `https://${process.env.REPLIT_DEV_DOMAIN}`;
-    log('[meta-images] using dev domain:', url);
-    return url;
+  // Use custom domain if set
+  if (process.env.VERCEL) {
+    // Vercel automatically sets this in production
+    return null; // Will use relative path in production
+  }
+
+  // Development fallback - use localhost or relative path
+  if (process.env.NODE_ENV === 'development') {
+    return null; // Use relative path in development
   }
 
   return null;

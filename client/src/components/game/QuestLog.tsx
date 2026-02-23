@@ -1,52 +1,6 @@
 import { motion } from "framer-motion";
-import { CheckCircle2, Circle, Clock, Sword, ExternalLink, PlayCircle } from "lucide-react";
-
-interface Quest {
-  id: number;
-  title: string;
-  desc: string;
-  status: "complete" | "in-progress" | "locked";
-  tech: string[];
-  links?: {
-    demo?: boolean;
-    view?: boolean;
-  };
-}
-
-const QUESTS: Quest[] = [
-  {
-    id: 1,
-    title: "ONLINE MARKETPLACE",
-    desc: "A React and Node.js-based marketplace for users to buy and sell products.",
-    status: "complete",
-    tech: ["React.js", "Node.js", "Firebase", "Redux"],
-    links: { demo: true, view: true }
-  },
-  {
-    id: 2,
-    title: "EMPLOYEE MANAGEMENT SYS",
-    desc: "A CRUD application to manage employee details with authentication and admin functionalities.",
-    status: "complete",
-    tech: ["React.js", "Firebase", "Node.js", "Express.js"],
-    links: { demo: true, view: true }
-  },
-  {
-    id: 3,
-    title: "AUDIO RECORDER APP",
-    desc: "A React Native app for recording and managing voice notes.",
-    status: "complete",
-    tech: ["React Native"],
-    links: { view: true }
-  },
-  {
-    id: 4,
-    title: "WEATHER APP",
-    desc: "Modern app providing real-time weather information, hourly forecasts, and weekly forecasts.",
-    status: "complete",
-    tech: ["React", "CSS", "WeatherAPI", "Axios"],
-    links: { demo: true, view: true }
-  }
-];
+import { CheckCircle2, Sword, ExternalLink, PlayCircle, Clock, Lock, Wifi, WifiOff } from "lucide-react";
+import questsData from "@/data/quests.json";
 
 export function QuestLog() {
   return (
@@ -57,7 +11,7 @@ export function QuestLog() {
       </h2>
 
       <div className="grid grid-cols-1 gap-4 pb-4">
-        {QUESTS.map((quest, index) => (
+        {questsData.quests.map((quest, index) => (
           <motion.div
             key={quest.id}
             initial={{ x: -20, opacity: 0 }}
@@ -65,17 +19,21 @@ export function QuestLog() {
             transition={{ delay: index * 0.1 }}
             className={`
               relative p-4 border-l-4 font-hud bg-black/40 hover:bg-white/5 transition-colors group
-              ${quest.status === 'complete' ? 'border-primary' : 'border-muted'}
+              ${quest.completed ? 'border-primary' : quest.status === 'in-progress' ? 'border-yellow-400/60' : 'border-muted'}
             `}
           >
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-2 gap-2">
               <h3 className="text-xl font-bold tracking-wider text-primary group-hover:text-white transition-colors">
                 {quest.title}
               </h3>
-              <div className="flex items-center gap-2">
-                <span className="text-primary flex items-center gap-1 text-xs px-2 py-1 bg-primary/10 border border-primary/30">
-                  <CheckCircle2 className="w-3 h-3"/> COMPLETED
-                </span>
+              <div className="flex items-center gap-2 flex-wrap">
+                <StatusBadge status={quest.status} completed={quest.completed} />
+                {quest.online !== undefined && (
+                  <span className={`flex items-center gap-1 text-xs px-2 py-1 border ${quest.online ? 'text-green-400 border-green-500/40 bg-green-500/10' : 'text-red-400 border-red-500/40 bg-red-500/10'}`}>
+                    {quest.online ? <Wifi className="w-3 h-3" /> : <WifiOff className="w-3 h-3" />}
+                    {quest.online ? "ONLINE" : "OFFLINE"}
+                  </span>
+                )}
               </div>
             </div>
 
@@ -93,15 +51,25 @@ export function QuestLog() {
               </div>
               
               <div className="flex gap-3">
-                {quest.links?.demo && (
-                  <button className="flex items-center gap-2 text-sm text-white hover:text-primary transition-colors uppercase font-bold tracking-wide">
+                {quest.links?.demo && quest.links?.demoUrl && (
+                  <a
+                    href={quest.links.demoUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="flex items-center gap-2 text-sm text-white hover:text-primary transition-colors uppercase font-bold tracking-wide"
+                  >
                     <PlayCircle className="w-4 h-4" /> Demo
-                  </button>
+                  </a>
                 )}
-                {quest.links?.view && (
-                  <button className="flex items-center gap-2 text-sm text-white hover:text-secondary transition-colors uppercase font-bold tracking-wide">
+                {quest.links?.view && quest.links?.viewUrl && (
+                  <a
+                    href={quest.links.viewUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="flex items-center gap-2 text-sm text-white hover:text-secondary transition-colors uppercase font-bold tracking-wide"
+                  >
                     <ExternalLink className="w-4 h-4" /> View Project
-                  </button>
+                  </a>
                 )}
               </div>
             </div>
@@ -109,5 +77,29 @@ export function QuestLog() {
         ))}
       </div>
     </div>
+  );
+}
+
+function StatusBadge({ status, completed }: { status: string; completed?: boolean }) {
+  if (completed || status === "complete") {
+    return (
+      <span className="text-primary flex items-center gap-1 text-xs px-2 py-1 bg-primary/10 border border-primary/30">
+        <CheckCircle2 className="w-3 h-3" /> COMPLETED
+      </span>
+    );
+  }
+
+  if (status === "in-progress") {
+    return (
+      <span className="text-yellow-300 flex items-center gap-1 text-xs px-2 py-1 bg-yellow-500/10 border border-yellow-500/30">
+        <Clock className="w-3 h-3" /> IN PROGRESS
+      </span>
+    );
+  }
+
+  return (
+    <span className="text-muted-foreground flex items-center gap-1 text-xs px-2 py-1 bg-white/5 border border-white/10">
+      <Lock className="w-3 h-3" /> LOCKED
+    </span>
   );
 }

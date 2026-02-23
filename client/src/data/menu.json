@@ -1,0 +1,10 @@
+{
+  "items": [
+    { "id": "profile", "label": "PROFILE", "icon": "User", "color": "text-primary" },
+    { "id": "quests",  "label": "QUESTS",  "icon": "Sword", "color": "text-secondary" },
+    { "id": "skills",  "label": "SKILLS",  "icon": "Zap",   "color": "text-accent" },
+    { "id": "arcade",  "label": "ARCADE",  "icon": "Gamepad2", "color": "text-yellow-400" },
+    { "id": "comms",   "label": "COMMS",   "icon": "MessageSquare", "color": "text-white" }
+  ]
+}
+
