@@ -16,17 +16,14 @@ export function metaImagesPlugin(): Plugin {
         return html;
       }
 
-      // Prefer the custom logo image and fall back to opengraph files.
+      // Check if opengraph image exists in public directory.
       const publicDir = path.resolve(process.cwd(), 'client', 'public');
-      const kojiPngPath = path.join(publicDir, 'koji.png');
       const opengraphPngPath = path.join(publicDir, 'opengraph.png');
       const opengraphJpgPath = path.join(publicDir, 'opengraph.jpg');
       const opengraphJpegPath = path.join(publicDir, 'opengraph.jpeg');
 
       let imageName: string | null = null;
-      if (fs.existsSync(kojiPngPath)) {
-        imageName = 'koji.png';
-      } else if (fs.existsSync(opengraphPngPath)) {
+      if (fs.existsSync(opengraphPngPath)) {
         imageName = 'opengraph.png';
       } else if (fs.existsSync(opengraphJpgPath)) {
         imageName = 'opengraph.jpg';
