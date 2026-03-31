@@ -1,10 +1,10 @@
 {
   "skills": [
     { "name": "HTML",         "level": 75, "desc": "Used in multiple projects",  "color": "primary" },
-    { "name": "CSS",          "level": 90, "desc": "Responsive layouts",         "color": "secondary" },
-    { "name": "React.js",     "level": 80, "desc": "State management",           "color": "accent" },
-    { "name": "JavaScript",   "level": 70, "desc": "Async programming",          "color": "primary" },
-    { "name": "React Native", "level": 75, "desc": "Mobile app development",     "color": "secondary" }
+    { "name": "CSS",          "level": 85, "desc": "Responsive layouts",         "color": "secondary" },
+    { "name": "React.js",     "level": 75, "desc": "State management",           "color": "accent" },
+    { "name": "JavaScript",   "level": 80, "desc": "Async programming",          "color": "primary" },
+    { "name": "React Native", "level": 65, "desc": "Mobile app development",     "color": "secondary" }
   ],
   "tools": [
     "JavaScript",
