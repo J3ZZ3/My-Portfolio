@@ -1,15 +1,40 @@
 import { useEffect, useRef, useState } from "react";
 import { Play, RotateCcw, Trophy } from "lucide-react";
+import { useLeaderboard } from "@/hooks/useLeaderboard";
+import { LeaderboardPanel } from "./LeaderboardPanel";
+import {
+  LeaderboardQualifyModal,
+  LeaderboardCongratsBanner,
+} from "./LeaderboardQualifyModal";
+import type { GameId } from "@/lib/leaderboard";
 
-export function BinaryBreaker() {
+interface BinaryBreakerProps {
+  gameId?: GameId;
+}
+
+export function BinaryBreaker({ gameId = "breaker" }: BinaryBreakerProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [score, setScore] = useState(0);
   const [highScore, setHighScore] = useState(0);
   const [gameOver, setGameOver] = useState(false);
-  const [lives, setLives] = useState(3);
 
-  // Keyboard state
+  const {
+    entries,
+    loading,
+    qualifyScore,
+    showQualifyModal,
+    congratsMessage,
+    submitting,
+    checkQualify,
+    submitName,
+    skipQualify,
+    dismissCongrats,
+  } = useLeaderboard(gameId);
+
+  const checkQualifyRef = useRef(checkQualify);
+  checkQualifyRef.current = checkQualify;
+
   const keysPressed = useRef<{ [key: string]: boolean }>({});
 
   useEffect(() => {
@@ -24,8 +49,7 @@ export function BinaryBreaker() {
     let ballY = canvas.height - 30;
     let dx = 4;
     let dy = -4;
-    
-    // Bricks
+
     const brickRowCount = 5;
     const brickColumnCount = 8;
     const brickWidth = 75;
@@ -46,15 +70,14 @@ export function BinaryBreaker() {
     let bricks: Brick[][] = [];
     const colors = ["#00ffff", "#ff00ff", "#ffff00", "#00ff00", "#ff0000"];
 
-    // Initialize bricks
     for (let c = 0; c < brickColumnCount; c++) {
       bricks[c] = [];
       for (let r = 0; r < brickRowCount; r++) {
-        bricks[c][r] = { 
-          x: 0, 
-          y: 0, 
+        bricks[c][r] = {
+          x: 0,
+          y: 0,
           status: 1,
-          color: colors[r % colors.length]
+          color: colors[r % colors.length],
         };
       }
     }
@@ -108,11 +131,9 @@ export function BinaryBreaker() {
               b.status = 0;
               currentScore += 10;
               setScore(currentScore);
-              
+
               if (currentScore === brickRowCount * brickColumnCount * 10) {
-                // Win condition (reset bricks)
-                dy = -dy * 1.1; // Speed up
-                // Reset bricks logic could go here
+                dy = -dy * 1.1;
               }
             }
           }
@@ -123,7 +144,6 @@ export function BinaryBreaker() {
     const draw = () => {
       if (!isPlaying) return;
 
-      // Update paddle position based on keyboard input
       if ((keysPressed.current["ArrowRight"] || keysPressed.current["d"]) && paddleX < canvas.width - paddleWidth) {
         paddleX += paddleSpeed;
       } else if ((keysPressed.current["ArrowLeft"] || keysPressed.current["a"]) && paddleX > 0) {
@@ -131,13 +151,12 @@ export function BinaryBreaker() {
       }
 
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      
+
       drawBricks();
       drawBall();
       drawPaddle();
       collisionDetection();
 
-      // Bounce off walls
       if (ballX + dx > canvas.width - 6 || ballX + dx < 6) {
         dx = -dx;
       }
@@ -146,12 +165,10 @@ export function BinaryBreaker() {
       } else if (ballY + dy > canvas.height - 6) {
         if (ballX > paddleX && ballX < paddleX + paddleWidth) {
           dy = -dy;
-          // Add some angle variation based on where it hit the paddle
           const hitPoint = ballX - (paddleX + paddleWidth / 2);
           dx = hitPoint * 0.15;
         } else {
-          // Game Over logic
-          handleGameOver();
+          handleGameOver(currentScore);
           return;
         }
       }
@@ -162,24 +179,23 @@ export function BinaryBreaker() {
       animationFrameId = requestAnimationFrame(draw);
     };
 
-    const handleGameOver = () => {
+    const handleGameOver = (finalScore: number) => {
       setIsPlaying(false);
       setGameOver(true);
-      setHighScore(prev => Math.max(prev, currentScore));
+      setHighScore((prev) => Math.max(prev, finalScore));
       cancelAnimationFrame(animationFrameId);
+      void checkQualifyRef.current(finalScore);
     };
 
-    // Mouse movement handler
     const mouseMoveHandler = (e: MouseEvent) => {
       const relativeX = e.clientX - canvas.offsetLeft;
       if (relativeX > 0 && relativeX < canvas.width) {
         paddleX = relativeX - paddleWidth / 2;
       }
     };
-    
-    // Touch movement
+
     const touchMoveHandler = (e: TouchEvent) => {
-      e.preventDefault(); // Prevent scrolling
+      e.preventDefault();
       const touch = e.touches[0];
       const rect = canvas.getBoundingClientRect();
       const relativeX = touch.clientX - rect.left;
@@ -214,15 +230,18 @@ export function BinaryBreaker() {
   }, [isPlaying, gameOver]);
 
   return (
-    <div className="h-full w-full flex flex-col items-center justify-center font-hud">
+    <div className="h-full w-full flex flex-col items-center justify-center font-hud overflow-y-auto p-2">
+      <LeaderboardCongratsBanner message={congratsMessage} onDismiss={dismissCongrats} />
+      <LeaderboardPanel entries={entries} loading={loading} accentClass="text-accent" />
+
       <div className="flex justify-between w-full max-w-[700px] mb-4 text-xl">
         <div className="text-accent flex items-center gap-2">
           <span>SCORE:</span>
-          <span className="font-pixel">{score.toString().padStart(5, '0')}</span>
+          <span className="font-pixel">{score.toString().padStart(5, "0")}</span>
         </div>
         <div className="text-secondary flex items-center gap-2">
           <Trophy className="w-5 h-5" />
-          <span className="font-pixel">{highScore.toString().padStart(5, '0')}</span>
+          <span className="font-pixel">{highScore.toString().padStart(5, "0")}</span>
         </div>
       </div>
 
@@ -234,12 +253,15 @@ export function BinaryBreaker() {
           className="w-full max-w-[700px] bg-black cursor-crosshair"
         />
 
-        {/* Overlays */}
         {!isPlaying && !gameOver && (
           <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/70 backdrop-blur-sm z-10">
-            <h2 className="text-4xl font-pixel text-accent mb-4 text-glow">BINARY<br/>BREAKER</h2>
+            <h2 className="text-4xl font-pixel text-accent mb-4 text-glow">
+              BINARY
+              <br />
+              BREAKER
+            </h2>
             <p className="text-muted-foreground mb-8 font-terminal text-xl">USE MOUSE OR A/D/ARROWS TO DEFLECT</p>
-            <button 
+            <button
               onClick={() => {
                 setScore(0);
                 setIsPlaying(true);
@@ -255,7 +277,7 @@ export function BinaryBreaker() {
           <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/80 backdrop-blur-sm z-10">
             <h2 className="text-4xl font-pixel text-red-500 mb-2 text-glow">CRASHED</h2>
             <p className="text-white mb-6 font-hud text-xl">DATA MINED: {score}</p>
-            <button 
+            <button
               onClick={() => {
                 setGameOver(false);
                 setScore(0);
@@ -267,8 +289,19 @@ export function BinaryBreaker() {
             </button>
           </div>
         )}
+
+        {showQualifyModal && qualifyScore !== null && (
+          <LeaderboardQualifyModal
+            open={showQualifyModal}
+            gameTitle="BINARY_BREAKER"
+            score={qualifyScore}
+            submitting={submitting}
+            onSubmit={submitName}
+            onSkip={skipQualify}
+          />
+        )}
       </div>
-      
+
       <div className="mt-6 text-accent font-terminal text-sm text-center max-w-lg">
         <p>&gt; INSTRUCTIONS: BREAK FIREWALL BLOCKS TO ACCESS DATA.</p>
         <p>&gt; CONTROLS: MOUSE OR KEYBOARD (A/D/Left/Right)</p>

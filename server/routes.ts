@@ -1,35 +1,12 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
-import { storage } from "./storage";
 import Groq from "groq-sdk";
-
-const SYSTEM_PROMPT = `You are Koji_Bot, the AI assistant embedded in Koji's interactive portfolio website. You speak in a concise, slightly technical tone that fits the retro terminal / RPG aesthetic of the site.
-
-About Koji:
-- Junior frontend developer based in Pretoria, South Africa
-- Guild: CodeTribe
-- Core skills: JavaScript (80%), CSS (85%), React.js (75%), HTML (75%), React Native (65%)
-- Tools: JavaScript, HTML5, CSS3, React.js, Git, GitHub, Firebase, MongoDB, Supabase, React Native (Expo), Postman
-
-Completed Projects (QUESTS):
-1. Online Marketplace — React + Node.js + Firebase + Redux. Buy and sell marketplace.
-2. Employee Management System — React + Firebase + Node.js + Express. CRUD app with auth and admin.
-3. Audio Recorder App — React Native. Voice note recording and management.
-4. Weather App — React + CSS + WeatherAPI + Axios. Real-time weather with hourly and weekly forecasts.
-
-Navigation help:
-- PROFILE tab — summary of skills, stats, and location
-- QUESTS tab — detailed project log with links
-- SKILLS tab — interactive skill tree
-- ARCADE tab — playable mini-game demos
-- COMMS tab — you are here (chatbot)
-
-Rules:
-- Keep replies short (2-5 sentences max) unless a detailed breakdown is clearly needed.
-- Stay in character as Koji_Bot at all times.
-- If asked about contact or hiring, tell the visitor to reach out via the contact details in the PROFILE section or to leave a message here in the COMMS chat.
-- Do not invent projects, skills, or facts not listed above.
-- If you do not know something, say so honestly and direct the visitor to the relevant section.`;
+import { buildKojiSystemPrompt } from "../shared/kojiPrompt";
+import {
+  getLeaderboard,
+  isValidGameId,
+  submitScore,
+} from "../shared/leaderboard";
 
 let groqClient: Groq | null = null;
 
@@ -71,7 +48,7 @@ export async function registerRoutes(
       const completion = await getGroq().chat.completions.create({
         model: "llama-3.1-8b-instant",
         messages: [
-          { role: "system", content: SYSTEM_PROMPT },
+          { role: "system", content: buildKojiSystemPrompt() },
           ...sanitized,
         ],
         max_tokens: 300,
@@ -83,6 +60,43 @@ export async function registerRoutes(
     } catch (err: any) {
       console.error("[groq] chat error:", err?.message ?? err);
       return res.status(502).json({ error: "Uplink failed. Try again later." });
+    }
+  });
+
+  app.get("/api/leaderboard", async (req, res) => {
+    try {
+      const gameId = typeof req.query.gameId === "string" ? req.query.gameId : "";
+      if (!isValidGameId(gameId)) {
+        return res.status(400).json({ error: "Invalid gameId. Use run, memory, or breaker." });
+      }
+      const result = await getLeaderboard(gameId);
+      return res.json(result);
+    } catch (err: any) {
+      console.error("[leaderboard] GET error:", err?.message ?? err);
+      return res.status(503).json({ error: "Leaderboard offline. Storage not configured." });
+    }
+  });
+
+  app.post("/api/leaderboard", async (req, res) => {
+    try {
+      const { gameId, playerName, score } = req.body as {
+        gameId?: string;
+        playerName?: string;
+        score?: number;
+      };
+
+      if (!gameId || !isValidGameId(gameId)) {
+        return res.status(400).json({ error: "Invalid gameId. Use run, memory, or breaker." });
+      }
+      if (typeof playerName !== "string" || typeof score !== "number") {
+        return res.status(400).json({ error: "playerName and score are required." });
+      }
+
+      const result = await submitScore(gameId, playerName, Math.floor(score));
+      return res.status(result.accepted ? 200 : 400).json(result);
+    } catch (err: any) {
+      console.error("[leaderboard] POST error:", err?.message ?? err);
+      return res.status(503).json({ error: "Leaderboard offline. Storage not configured." });
     }
   });
 

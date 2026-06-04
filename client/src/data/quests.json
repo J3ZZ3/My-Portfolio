@@ -11,23 +11,23 @@
       "links": {
         "demo": true,
         "view": true,
-        "demoUrl": "https://example.com/marketplace/demo",
-        "viewUrl": "https://example.com/marketplace"
+        "demoUrl": "https://pillock.vercel.app/",
+        "viewUrl": "https://github.com/J3ZZ3/Marketplace"
       }
     },
     {
       "id": 2,
-      "title": "EMPLOYEE MANAGEMENT SYS",
-      "desc": "A CRUD application to manage employee details with authentication and admin functionalities.",
+      "title": "SHOPPING LIST APP",
+      "desc": "Listify is a modern, feature-rich shopping list management application built with React Native and Expo. It provides users with an intuitive interface to create, manage, and organize their shopping lists efficiently.",
       "status": "complete",
       "completed": true,
       "online": true,
-      "tech": ["React.js", "Firebase", "Node.js", "Express.js"],
+      "tech": ["React Native", "Redux Toolkit"],
       "links": {
         "demo": true,
         "view": true,
-        "demoUrl": "https://example.com/ems/demo",
-        "viewUrl": "https://example.com/ems"
+        "demoUrl": "https://github.com/J3ZZ3/Expo_Shopping_List/releases/download/shopping-list/Listify.apk",
+        "viewUrl": "https://github.com/J3ZZ3/Expo_Shopping_List"
       }
     },
     {
@@ -41,8 +41,8 @@
       "links": {
         "demo": true,
         "view": true,
-        "demoUrl": "https://example.com/audio-recorder/demo",
-        "viewUrl": "https://example.com/audio-recorder"
+        "demoUrl": "https://drive.google.com/file/d/1UG-QOMhotIiU7aVgmwqrTLXDnqykByFx/view?usp=drive_link",
+        "viewUrl": "https://github.com/J3ZZ3/Audio_Recorder"
       }
     },
     {
@@ -56,8 +56,8 @@
       "links": {
         "demo": true,
         "view": true,
-        "demoUrl": "https://example.com/weather/demo",
-        "viewUrl": "https://example.com/weather"
+        "demoUrl": "https://weatherapplj.vercel.app/",
+        "viewUrl": "https://github.com/J3ZZ3/weather-app"
       }
     }
   ]

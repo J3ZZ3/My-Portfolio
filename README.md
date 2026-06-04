@@ -9,8 +9,8 @@ A retro-futuristic, game-inspired interactive portfolio built with React, TypeSc
 - **Interactive Game Interface** - Navigate through your portfolio like a retro game
 - **Quest Log** - Projects displayed as completed quests with live/demo links
 - **Skill Matrix** - Visual representation of your technical skills with progress bars
-- **Arcade System** - Playable mini-games (Cyber Run, Memory Matrix, Binary Breaker)
-- **Comms System** - Contact/communication interface
+- **Arcade System** - Playable mini-games with global top-3 leaderboards
+- **Comms System** - Koji_Bot AI assistant (Groq) synced to quests.json
 - **Dynamic Backgrounds** - Rotating video backgrounds with manual controls
 - **Background Music** - Immersive arcade-style audio with volume controls
 - **Fully Responsive** - Works seamlessly on desktop, tablet, and mobile
@@ -88,7 +88,26 @@ Simply edit these JSON files to update your portfolio content without touching c
    - **Output Directory:** `dist/public`
    - **Install Command:** `npm install`
 
-### Custom Domain Setup
+### Environment Variables
+
+Copy `.env.example` to `.env` for local development:
+
+| Variable | Purpose |
+|----------|---------|
+| `KV_REST_API_URL` | Arcade leaderboard storage (Vercel Upstash integration) |
+| `KV_REST_API_TOKEN` | Arcade leaderboard storage (Vercel Upstash integration) |
+| `GROQ_API_KEY` | Powers Koji_Bot in the COMMS tab (`/api/chat`) |
+
+**Koji_Bot** reads project data from `client/src/data/quests.json` at runtime — update quests there and redeploy; no prompt editing needed.
+
+### Arcade Leaderboards (Upstash Redis)
+
+1. In Vercel: **Storage → Marketplace → Upstash Redis**
+2. Create a database and **Connect** it to this project
+3. Vercel auto-injects `KV_REST_API_URL` and `KV_REST_API_TOKEN` (database name e.g. PortfolioLeaderboard)
+4. Redeploy — each arcade game (Cyber Run, Memory Matrix, Binary Breaker) stores a global top 3
+
+Local dev: add the same Upstash env vars to `.env` and run `npm run dev`.
 
 1. **Purchase Domain** (recommended: Cloudflare Registrar for best prices)
    - Go to [Cloudflare](https://www.cloudflare.com/products/registrar/) or [Namecheap](https://www.namecheap.com/)
