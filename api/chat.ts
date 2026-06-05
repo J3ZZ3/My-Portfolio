@@ -1,6 +1,4 @@
 import Groq from "groq-sdk";
-import questsData from "./quests.json";
-import skillsData from "./skills.json";
 
 let groqClient: Groq | null = null;
 
@@ -21,6 +19,82 @@ interface Quest {
   links?: { demoUrl?: string };
 }
 
+const QUESTS_DATA: { quests: Quest[] } = {
+  quests: [
+    {
+      id: 1,
+      title: "ONLINE MARKETPLACE",
+      desc: "A React and Node.js-based marketplace for users to buy and sell products.",
+      status: "complete",
+      completed: true,
+      online: true,
+      tech: ["React.js", "Node.js", "Firebase", "Redux"],
+      links: {
+        demoUrl: "https://pillock.vercel.app/",
+      },
+    },
+    {
+      id: 2,
+      title: "SHOPPING LIST APP",
+      desc: "Listify is a modern, feature-rich shopping list management application built with React Native and Expo.",
+      status: "complete",
+      completed: true,
+      online: true,
+      tech: ["React Native", "Redux Toolkit"],
+      links: {
+        demoUrl: "https://github.com/J3ZZ3/Expo_Shopping_List/releases/download/shopping-list/Listify.apk",
+      },
+    },
+    {
+      id: 3,
+      title: "AUDIO RECORDER APP",
+      desc: "A React Native app for recording and managing voice notes.",
+      status: "complete",
+      completed: true,
+      online: false,
+      tech: ["React Native"],
+      links: {
+        demoUrl: "https://drive.google.com/file/d/1UG-QOMhotIiU7aVgmwqrTLXDnqykByFx/view?usp=drive_link",
+      },
+    },
+    {
+      id: 4,
+      title: "WEATHER APP",
+      desc: "Modern app providing real-time weather information, hourly forecasts, and weekly forecasts.",
+      status: "complete",
+      completed: true,
+      online: true,
+      tech: ["React", "CSS", "WeatherAPI", "Axios"],
+      links: {
+        demoUrl: "https://weatherapplj.vercel.app/",
+      },
+    },
+  ],
+};
+
+const SKILLS_DATA = {
+  skills: [
+    { name: "HTML", level: 75 },
+    { name: "CSS", level: 85 },
+    { name: "React.js", level: 75 },
+    { name: "JavaScript", level: 80 },
+    { name: "React Native", level: 65 },
+  ],
+  tools: [
+    "JavaScript",
+    "HTML5",
+    "CSS3",
+    "React.js",
+    "Git",
+    "GitHub",
+    "Firebase",
+    "MongoDB",
+    "Supabase",
+    "React Native (Expo)",
+    "Postman",
+  ],
+};
+
 function inferDemoType(quest: Quest): string {
   const demoUrl = quest.links?.demoUrl ?? "";
   if (demoUrl.toLowerCase().endsWith(".apk")) return "APK download (mobile)";
@@ -29,15 +103,15 @@ function inferDemoType(quest: Quest): string {
 }
 
 function buildKojiSystemPrompt(): string {
-  const quests = (questsData.quests as Quest[])
+  const quests = QUESTS_DATA.quests
     .map((q, i) => {
       const tech = q.tech.join(", ");
       return `${i + 1}. ${q.title} — ${q.desc} Tech: ${tech}. Demo type: ${inferDemoType(q)}. Status: ${q.status}.`;
     })
     .join("\n");
 
-  const levels = skillsData.skills.map((s) => `${s.name} (${s.level}%)`).join(", ");
-  const tools = skillsData.tools.join(", ");
+  const levels = SKILLS_DATA.skills.map((s) => `${s.name} (${s.level}%)`).join(", ");
+  const tools = SKILLS_DATA.tools.join(", ");
 
   return `You are Koji_Bot, the AI assistant embedded in Koji's interactive portfolio website. You speak in a concise, slightly technical tone that fits the retro terminal / RPG aesthetic of the site.
 
@@ -77,7 +151,10 @@ export default async function handler(req: any, res: any) {
     return res.status(405).json({ error: "Method Not Allowed" });
   }
 
-  const body = typeof req.body === "string" ? JSON.parse(req.body) : req.body;
+  const body =
+    typeof req.body === "string" && req.body.length > 0
+      ? JSON.parse(req.body)
+      : req.body;
   const { messages } = body as {
     messages: { role: "user" | "assistant"; content: string }[];
   };
@@ -100,6 +177,10 @@ export default async function handler(req: any, res: any) {
   }
 
   try {
+    if (!process.env.GROQ_API_KEY) {
+      return res.status(503).json({ error: "GROQ_API_KEY is missing in production environment." });
+    }
+
     const completion = await getGroq().chat.completions.create({
       model: "llama-3.1-8b-instant",
       messages: [{ role: "system", content: buildKojiSystemPrompt() }, ...sanitized],
