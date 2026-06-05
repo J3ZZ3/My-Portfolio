@@ -1,5 +1,5 @@
 import Groq from "groq-sdk";
-import { buildKojiSystemPrompt } from "../shared/kojiPrompt";
+import { buildKojiSystemPrompt } from "./_lib/kojiPrompt";
 
 let groqClient: Groq | null = null;
 

@@ -2,7 +2,7 @@ import {
   getLeaderboard,
   isValidGameId,
   submitScore,
-} from "../shared/leaderboard";
+} from "./_lib/leaderboard";
 
 export default async function handler(req: any, res: any) {
   try {

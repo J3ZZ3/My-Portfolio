@@ -22,11 +22,14 @@ export function qualifiesForLeaderboard(
 }
 
 export async function fetchLeaderboard(gameId: GameId): Promise<LeaderboardData> {
-  const res = await fetch(`/api/leaderboard?gameId=${gameId}`);
-  if (!res.ok) {
+  try {
+    const res = await fetch(`/api/leaderboard?gameId=${gameId}`);
+    if (!res.ok) return { entries: [], cutoffScore: 0 };
+    const text = await res.text();
+    return JSON.parse(text) as LeaderboardData;
+  } catch {
     return { entries: [], cutoffScore: 0 };
   }
-  return res.json();
 }
 
 export async function submitLeaderboardScore(
@@ -34,11 +37,20 @@ export async function submitLeaderboardScore(
   playerName: string,
   score: number,
 ): Promise<{ accepted: boolean; message: string; rank?: number; entries: LeaderboardEntry[] }> {
-  const res = await fetch("/api/leaderboard", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ gameId, playerName, score }),
-  });
-  const data = await res.json();
-  return data;
+  try {
+    const res = await fetch("/api/leaderboard", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ gameId, playerName, score }),
+    });
+    const text = await res.text();
+    const data = JSON.parse(text);
+    return data;
+  } catch {
+    return {
+      accepted: false,
+      message: "Leaderboard uplink failed. Try again later.",
+      entries: [],
+    };
+  }
 }
