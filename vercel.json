@@ -4,6 +4,11 @@
   "outputDirectory": "dist/public",
   "installCommand": "npm install",
   "framework": "vite",
+  "functions": {
+    "api/*.ts": {
+      "includeFiles": "api/**"
+    }
+  },
   "rewrites": [
     {
       "source": "/((?!api/).*)",

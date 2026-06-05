@@ -1,0 +1,64 @@
+{
+  "quests": [
+    {
+      "id": 1,
+      "title": "ONLINE MARKETPLACE",
+      "desc": "A React and Node.js-based marketplace for users to buy and sell products.",
+      "status": "complete",
+      "completed": true,
+      "online": true,
+      "tech": ["React.js", "Node.js", "Firebase", "Redux"],
+      "links": {
+        "demo": true,
+        "view": true,
+        "demoUrl": "https://pillock.vercel.app/",
+        "viewUrl": "https://github.com/J3ZZ3/Marketplace"
+      }
+    },
+    {
+      "id": 2,
+      "title": "SHOPPING LIST APP",
+      "desc": "Listify is a modern, feature-rich shopping list management application built with React Native and Expo.",
+      "status": "complete",
+      "completed": true,
+      "online": true,
+      "tech": ["React Native", "Redux Toolkit"],
+      "links": {
+        "demo": true,
+        "view": true,
+        "demoUrl": "https://github.com/J3ZZ3/Expo_Shopping_List/releases/download/shopping-list/Listify.apk",
+        "viewUrl": "https://github.com/J3ZZ3/Expo_Shopping_List"
+      }
+    },
+    {
+      "id": 3,
+      "title": "AUDIO RECORDER APP",
+      "desc": "A React Native app for recording and managing voice notes.",
+      "status": "complete",
+      "completed": true,
+      "online": false,
+      "tech": ["React Native"],
+      "links": {
+        "demo": true,
+        "view": true,
+        "demoUrl": "https://drive.google.com/file/d/1UG-QOMhotIiU7aVgmwqrTLXDnqykByFx/view?usp=drive_link",
+        "viewUrl": "https://github.com/J3ZZ3/Audio_Recorder"
+      }
+    },
+    {
+      "id": 4,
+      "title": "WEATHER APP",
+      "desc": "Modern app providing real-time weather information, hourly forecasts, and weekly forecasts.",
+      "status": "complete",
+      "completed": true,
+      "online": true,
+      "tech": ["React", "CSS", "WeatherAPI", "Axios"],
+      "links": {
+        "demo": true,
+        "view": true,
+        "demoUrl": "https://weatherapplj.vercel.app/",
+        "viewUrl": "https://github.com/J3ZZ3/weather-app"
+      }
+    }
+  ]
+}
