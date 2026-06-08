@@ -1,6 +1,6 @@
 import { Redis } from "@upstash/redis";
 
-export const GAME_IDS = ["run", "memory", "breaker"] as const;
+export const GAME_IDS = ["run", "memory", "breaker", "chess"] as const;
 export type GameId = (typeof GAME_IDS)[number];
 
 export interface LeaderboardEntry {

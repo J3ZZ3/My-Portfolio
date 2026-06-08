@@ -1,4 +1,4 @@
-export type GameId = "run" | "memory" | "breaker";
+export type GameId = "run" | "memory" | "breaker" | "chess";
 
 export interface LeaderboardEntry {
   rank: number;

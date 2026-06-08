@@ -23,6 +23,14 @@
       "icon": "Gamepad2",
       "color": "text-accent",
       "borderColor": "border-accent"
+    },
+    {
+      "id": "chess",
+      "title": "NEON_CHESS",
+      "desc": "Checkmate NULLSPAWN. Purge it from the board.",
+      "icon": "Crown",
+      "color": "text-yellow-400",
+      "borderColor": "border-yellow-400"
     }
   ]
 }

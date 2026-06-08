@@ -1,6 +1,6 @@
 import { Redis } from "@upstash/redis";
 
-const GAME_IDS = ["run", "memory", "breaker"] as const;
+const GAME_IDS = ["run", "memory", "breaker", "chess"] as const;
 type GameId = (typeof GAME_IDS)[number];
 
 const MAX_STORED = 100;

@@ -1,14 +1,20 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, lazy, Suspense } from "react";
 import { motion } from "framer-motion";
-import { Gamepad2, Brain, Activity, Trophy } from "lucide-react";
+import { Gamepad2, Brain, Activity, Trophy, Crown, Loader2 } from "lucide-react";
 import arcadeData from "@/data/arcade.json";
 import { fetchLeaderboard, type GameId, type LeaderboardEntry } from "@/lib/leaderboard";
-import { CyberRun } from "./CyberRun";
-import { MemoryMatrix } from "./MemoryMatrix";
-import { BinaryBreaker } from "./BinaryBreaker";
+import { CyberRun } from "./cyber-run/CyberRun";
+import { MemoryMatrix } from "./memory-matrix/MemoryMatrix";
+import { BinaryBreaker } from "./binary-breaker/BinaryBreaker";
+
+const ChessGame = lazy(() =>
+  import("./neon-chess/ChessGame").then((m) => ({ default: m.ChessGame })),
+);
 
 export function ArcadeView() {
-  const [selectedGame, setSelectedGame] = useState<"menu" | "run" | "memory" | "breaker">("menu");
+  const [selectedGame, setSelectedGame] = useState<
+    "menu" | "run" | "memory" | "breaker" | "chess"
+  >("menu");
 
   if (selectedGame === "run") {
     return (
@@ -31,6 +37,22 @@ export function ArcadeView() {
       </GameWrapper>
     );
   }
+  if (selectedGame === "chess") {
+    return (
+      <GameWrapper onBack={() => setSelectedGame("menu")}>
+        <Suspense
+          fallback={
+            <div className="h-full flex items-center justify-center font-pixel text-yellow-400 gap-2">
+              <Loader2 className="w-5 h-5 animate-spin" />
+              LOADING_NEON_CHESS...
+            </div>
+          }
+        >
+          <ChessGame gameId="chess" />
+        </Suspense>
+      </GameWrapper>
+    );
+  }
 
   return (
     <div className="h-full w-full p-6 overflow-y-auto font-terminal">
@@ -39,9 +61,9 @@ export function ArcadeView() {
         <span className="break-words">ARCADE_SYSTEM</span>
       </h2>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {arcadeData.games.map((game) => {
-          const iconMap = { Activity, Brain, Gamepad2 };
+          const iconMap = { Activity, Brain, Gamepad2, Crown };
           const Icon = iconMap[game.icon as keyof typeof iconMap] ?? Gamepad2;
           return (
         <GameCard
@@ -52,7 +74,9 @@ export function ArcadeView() {
               desc={game.desc}
               color={game.color}
               borderColor={game.borderColor}
-              onClick={() => setSelectedGame(game.id as "run" | "memory" | "breaker")}
+              onClick={() =>
+                setSelectedGame(game.id as "run" | "memory" | "breaker" | "chess")
+              }
         />
           );
         })}

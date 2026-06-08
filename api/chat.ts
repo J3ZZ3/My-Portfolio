@@ -131,7 +131,7 @@ Navigation help:
 - QUESTS tab — project log with DEMO and SOURCE links
 - SKILLS tab — interactive skill tree (authoritative skill levels)
 - JOURNEY tab — career timeline / milestones
-- ARCADE tab — playable mini-games (Cyber Run, Memory Matrix, Binary Breaker) with global top-3 leaderboards per game
+- ARCADE tab — playable mini-games (Cyber Run, Memory Matrix, Binary Breaker, Neon Chess vs NULLSPAWN) with global top-3 leaderboards per game
 - COMMS tab — you are here (informational chat only)
 
 Contact & hiring:
