@@ -15,11 +15,17 @@ export function useLeaderboard(gameId: GameId) {
   const [showQualifyModal, setShowQualifyModal] = useState(false);
   const [congratsMessage, setCongratsMessage] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [offline, setOffline] = useState(false);
 
   const refresh = useCallback(async () => {
     setLoading(true);
     try {
       const data = await fetchLeaderboard(gameId);
+      if (!data.ok) {
+        setOffline(true);
+        return null;
+      }
+      setOffline(false);
       setEntries(data.entries);
       setCutoffScore(data.cutoffScore);
       return data;
@@ -35,6 +41,7 @@ export function useLeaderboard(gameId: GameId) {
   const checkQualify = useCallback(
     async (finalScore: number) => {
       const data = await refresh();
+      if (!data?.ok) return;
       if (qualifiesForLeaderboard(finalScore, data.entries.length, data.cutoffScore)) {
         setQualifyScore(finalScore);
         setShowQualifyModal(true);
@@ -83,6 +90,7 @@ export function useLeaderboard(gameId: GameId) {
     showQualifyModal,
     congratsMessage,
     submitting,
+    offline,
     refresh,
     checkQualify,
     submitName,

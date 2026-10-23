@@ -1,15 +1,18 @@
 import { Trophy } from "lucide-react";
 import type { LeaderboardEntry } from "@/lib/leaderboard";
+import { leaderboardMessage } from "@/lib/releaseState";
 
 interface LeaderboardPanelProps {
   entries: LeaderboardEntry[];
   loading?: boolean;
+  offline?: boolean;
   accentClass?: string;
 }
 
 export function LeaderboardPanel({
   entries,
   loading = false,
+  offline = false,
   accentClass = "text-primary",
 }: LeaderboardPanelProps) {
   const slots: (LeaderboardEntry | null)[] = [0, 1, 2].map(
@@ -23,7 +26,9 @@ export function LeaderboardPanel({
         TOP_3_LEADERBOARD
       </div>
       {loading ? (
-        <p className="font-terminal text-xs text-muted-foreground">&gt; SYNCING RANKINGS...</p>
+        <p className="font-terminal text-base text-muted-foreground">{leaderboardMessage("loading")}</p>
+      ) : offline ? (
+        <p className="font-terminal text-base text-yellow-300 whitespace-pre-line">{leaderboardMessage("offline")}</p>
       ) : (
         <div className="grid grid-cols-3 gap-2 font-hud text-xs">
           {slots.map((entry, i) => (

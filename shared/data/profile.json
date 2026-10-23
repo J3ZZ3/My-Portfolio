@@ -1,0 +1,92 @@
+{
+  "display": {
+    "avatarLabel": "LVL. 1 JUNIOR DEV",
+    "stats": {
+      "hp": 90,
+      "mp": 85,
+      "xp": 75
+    },
+    "location": "PRETORIA",
+    "guild": "CODETRIBE",
+    "systemLines": [
+      "> SYSTEM MSG: WELCOME TO MY PORTFOLIO.",
+      "> CLASS: JUNIOR DEVELOPER (WEB & MOBILE)."
+    ],
+    "bio": [
+      "I'm Jesse Mashoana, a Junior Developer (Web & Mobile) based in Pretoria, South Africa, with hands-on experience building and maintaining web applications, integrations, and production software.",
+      "During my time at XNext ISP through mLab Southern Africa, I contributed to customer-facing platforms, internal business systems, fibre coverage and onboarding flows, billing and payment functionality, REST APIs, and third-party integrations.",
+      "My strongest areas include JavaScript, Node.js, Express, React, PostgreSQL, REST APIs, Git, and Docker. I also build mobile apps using React Native and Expo.",
+      "I enjoy solving technical problems, understanding systems end-to-end, improving existing implementations, and delivering practical software that works in real-world environments."
+    ],
+    "traits": [
+      {
+        "id": "focus",
+        "label": "FOCUS",
+        "text": "Backend systems and integrations"
+      },
+      {
+        "id": "style",
+        "label": "STYLE",
+        "text": "Practical software delivery"
+      },
+      {
+        "id": "mindset",
+        "label": "MINDSET",
+        "text": "Debugging and problem solving"
+      },
+      {
+        "id": "tactics",
+        "label": "TACTICS",
+        "text": "Learning and collaboration"
+      }
+    ]
+  },
+  "professional": {
+    "name": "Jesse Mashoana",
+    "alias": "Koji",
+    "title": "Junior Developer (Web & Mobile)",
+    "location": "Pretoria, South Africa",
+    "email": "jesse.mashoana@gmail.com",
+    "github": {
+      "username": "J3ZZ3",
+      "url": "https://github.com/J3ZZ3"
+    },
+    "experience": [
+      {
+        "organization": "mLab Southern Africa",
+        "placement": "XNext ISP",
+        "start": "September 2025",
+        "end": "September 2026",
+        "areas": [
+          "Customer self-service applications",
+          "Fibre coverage and onboarding",
+          "Billing and payment functionality",
+          "REST API development",
+          "Third-party integrations",
+          "Testing and technical debugging"
+        ]
+      }
+    ],
+    "education": [
+      {
+        "organization": "CodeTribe Academy",
+        "program": "React Course",
+        "status": "completed",
+        "date": "April 2025"
+      },
+      {
+        "organization": "Mobile Applications Laboratory (mLab)",
+        "program": "STEP UP I Programme",
+        "status": "awarded",
+        "date": "September 2026",
+        "includes": [
+          "technical training",
+          "practical workplace-based learning",
+          "cloud systems administration",
+          "introductory web development",
+          "workplace readiness"
+        ]
+      }
+    ]
+  }
+}

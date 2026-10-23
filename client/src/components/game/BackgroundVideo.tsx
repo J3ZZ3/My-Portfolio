@@ -55,6 +55,7 @@ export function BackgroundVideo({ cycleKey }: BackgroundVideoProps) {
             loop
             muted
             playsInline
+            preload="metadata"
             onError={handleError}
             className="absolute inset-0 w-full h-full object-cover mix-blend-screen"
           >

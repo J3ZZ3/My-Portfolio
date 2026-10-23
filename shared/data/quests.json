@@ -1,0 +1,102 @@
+{
+  "quests": [
+    {
+      "id": 1,
+      "title": "Online Marketplace",
+      "category": "Full-Stack / E-commerce",
+      "summary": "A full-stack marketplace for buying and selling products, with a React and Redux client, a Node.js API, and Firebase.",
+      "status": "complete",
+      "availability": "live",
+      "tech": ["React", "Redux", "Node.js", "Firebase"],
+      "features": [
+        "User authentication",
+        "Product listings and management",
+        "Shopping cart",
+        "Buying and selling products",
+        "PayPal payment integration",
+        "PDF receipt generation"
+      ],
+      "details": "The client uses React and Redux. Node.js serves the API. Firebase stores application data. PayPal handles payment, and receipts are generated as PDFs.",
+      "links": {
+        "live": "https://pillock.vercel.app/",
+        "repository": "https://github.com/J3ZZ3/Marketplace"
+      },
+      "featured": true,
+      "public": true
+    },
+    {
+      "id": 2,
+      "title": "FitTrack",
+      "category": "Mobile Application / Fitness",
+      "summary": "FitTrack is an offline-first fitness application built with React Native and Expo, featuring workout generation, exercise demonstrations, local SQLite storage, and downloadable exercise media delivered through Cloudflare Workers and R2.",
+      "status": "in-development",
+      "availability": "in-development",
+      "tech": ["React Native", "Expo", "SQLite", "Cloudflare Workers", "Cloudflare R2"],
+      "features": [
+        "Workout and exercise management",
+        "Exercise catalog",
+        "Workout session generation",
+        "Offline-first application design",
+        "SQLite local storage",
+        "Download-on-demand exercise media",
+        "Equipment-based downloadable media packs",
+        "Cloudflare R2 media storage",
+        "Worker-based media delivery",
+        "Automated testing"
+      ],
+      "details": "Workouts and the exercise catalog are stored in local SQLite. Exercise media is downloaded on demand, including equipment-based packs, from Cloudflare R2 through a Worker.",
+      "featured": true,
+      "public": true
+    },
+    {
+      "id": 3,
+      "title": "Listify — Shopping List",
+      "category": "Mobile Application",
+      "summary": "Listify is a React Native and Expo shopping-list app for creating, managing, and organizing lists.",
+      "status": "complete",
+      "availability": "download",
+      "tech": ["React Native", "Expo", "Redux Toolkit"],
+      "features": [
+        "Create shopping lists",
+        "Manage list items",
+        "Organize lists"
+      ],
+      "links": {
+        "repository": "https://github.com/J3ZZ3/Expo_Shopping_List",
+        "download": "https://github.com/J3ZZ3/Expo_Shopping_List/releases/download/shopping-list/Listify.apk"
+      },
+      "featured": true,
+      "public": true
+    },
+    {
+      "id": 4,
+      "title": "Audio Recorder",
+      "category": "Mobile Application / Audio",
+      "summary": "A React Native app for recording and managing voice notes.",
+      "status": "complete",
+      "availability": "download",
+      "tech": ["React Native"],
+      "links": {
+        "repository": "https://github.com/J3ZZ3/Audio_Recorder",
+        "download": "https://drive.google.com/file/d/1UG-QOMhotIiU7aVgmwqrTLXDnqykByFx/view?usp=drive_link"
+      },
+      "featured": false,
+      "public": true
+    },
+    {
+      "id": 5,
+      "title": "Weather App",
+      "category": "Web Application",
+      "summary": "Modern app providing real-time weather information, hourly forecasts, and weekly forecasts.",
+      "status": "complete",
+      "availability": "live",
+      "tech": ["React", "CSS", "WeatherAPI", "Axios"],
+      "links": {
+        "live": "https://weatherapplj.vercel.app/",
+        "repository": "https://github.com/J3ZZ3/weather-app"
+      },
+      "featured": false,
+      "public": true
+    }
+  ]
+}

@@ -1,10 +1,14 @@
 // Retro Synth Audio System
 // Uses Web Audio API to generate sounds procedurally (no external assets needed)
 
+import { DEFAULT_VOLUME, effectGain } from "./releaseState";
+
 class AudioController {
   private ctx: AudioContext | null = null;
   private masterGain: GainNode | null = null;
   private enabled: boolean = false;
+  private muted: boolean = false;
+  private volume: number = DEFAULT_VOLUME;
 
   constructor() {
     // Initialize on first user interaction
@@ -21,15 +25,29 @@ class AudioController {
       this.ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
       this.masterGain = this.ctx.createGain();
       this.masterGain.connect(this.ctx.destination);
-      this.masterGain.gain.value = 0.1; // Low volume by default
+      this.applyGain();
       this.enabled = true;
     } catch (e) {
       console.error("Audio initialization failed", e);
     }
   }
 
+  setVolume(volume: number) {
+    this.volume = Number.isFinite(volume) ? Math.min(1, Math.max(0, volume)) : 0;
+    this.applyGain();
+  }
+
+  setMuted(muted: boolean) {
+    this.muted = muted;
+    this.applyGain();
+  }
+
+  private applyGain() {
+    if (this.masterGain) this.masterGain.gain.value = effectGain(this.muted, this.volume);
+  }
+
   playTone(freq: number, type: OscillatorType, duration: number, delay = 0) {
-    if (!this.ctx || !this.masterGain) return;
+    if (this.muted || !this.ctx || !this.masterGain) return;
 
     const osc = this.ctx.createOscillator();
     const gain = this.ctx.createGain();

@@ -6,7 +6,7 @@
   "framework": "vite",
   "functions": {
     "api/*.ts": {
-      "includeFiles": "api/**"
+      "includeFiles": ["api/**", "shared/data/**"]
     }
   },
   "rewrites": [

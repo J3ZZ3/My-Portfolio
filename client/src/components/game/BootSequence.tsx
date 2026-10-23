@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { audio } from "@/lib/audio";
 
@@ -6,56 +6,59 @@ interface BootSequenceProps {
   onComplete: () => void;
 }
 
+const sequence = [
+  "INITIALIZING SYSTEM CORE...",
+  "LOADING KERNEL MODULES... OK",
+  "MOUNTING FILE SYSTEM... OK",
+  "CHECKING MEMORY INTEGRITY... 100%",
+  "ESTABLISHING SECURE CONNECTION...",
+  "LOADING USER PROFILE... DONE",
+  "SYSTEM READY.",
+];
+
 export function BootSequence({ onComplete }: BootSequenceProps) {
   const [lines, setLines] = useState<string[]>([]);
-  
-  const sequence = [
-    "INITIALIZING SYSTEM CORE...",
-    "LOADING KERNEL MODULES... OK",
-    "MOUNTING FILE SYSTEM... OK",
-    "CHECKING MEMORY INTEGRITY... 100%",
-    "ESTABLISHING SECURE CONNECTION...",
-    "LOADING USER PROFILE... DONE",
-    "SYSTEM READY."
-  ];
+  const onCompleteRef = useRef(onComplete);
+  onCompleteRef.current = onComplete;
 
   useEffect(() => {
+    const finish = () => onCompleteRef.current();
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduced) {
+      setLines(sequence);
+      const done = window.setTimeout(finish, 400);
+      return () => window.clearTimeout(done);
+    }
+
     let currentIndex = 0;
-    
-    const interval = setInterval(() => {
+    let done = 0;
+    const interval = window.setInterval(() => {
       if (currentIndex >= sequence.length) {
-        clearInterval(interval);
-        setTimeout(onComplete, 1000);
+        window.clearInterval(interval);
+        done = window.setTimeout(finish, 1000);
         return;
       }
-
-      setLines(prev => [...prev, sequence[currentIndex]]);
+      const line = sequence[currentIndex];
+      setLines((prev) => [...prev, line]);
       audio.playTyping();
-      currentIndex++;
+      currentIndex += 1;
     }, 400);
 
-    return () => clearInterval(interval);
+    return () => {
+      window.clearInterval(interval);
+      if (done) window.clearTimeout(done);
+    };
   }, []);
 
   return (
-    <div className="fixed inset-0 bg-black z-50 flex items-start justify-start p-8 font-terminal text-primary text-xl">
+    <div className="fixed inset-0 bg-black z-50 flex items-start justify-start p-4 sm:p-8 font-terminal text-primary text-lg sm:text-xl overflow-y-auto">
       <div className="space-y-2">
-        {lines.map((line, i) => (
-          <motion.div
-            key={i}
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="flex items-center gap-2"
-          >
+        {lines.map((line) => (
+          <motion.div key={line} initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-center gap-2">
             <span className="text-muted-foreground">&gt;</span>
             {line}
           </motion.div>
         ))}
-        <motion.div
-          animate={{ opacity: [0, 1, 0] }}
-          transition={{ repeat: Infinity, duration: 0.8 }}
-          className="w-3 h-5 bg-primary inline-block ml-2 align-middle"
-        />
       </div>
     </div>
   );

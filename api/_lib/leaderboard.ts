@@ -1,7 +1,15 @@
 import { Redis } from "@upstash/redis";
+import {
+  GAME_IDS,
+  INVALID_NAME_MESSAGE,
+  INVALID_SCORE_MESSAGE,
+  isValidGameId,
+  sanitizePlayerName,
+  validateScore,
+  type GameId,
+} from "../../shared/leaderboardRules";
 
-export const GAME_IDS = ["run", "memory", "breaker", "chess"] as const;
-export type GameId = (typeof GAME_IDS)[number];
+export { GAME_IDS, isValidGameId, type GameId };
 
 export interface LeaderboardEntry {
   rank: number;
@@ -22,8 +30,6 @@ export interface SubmitResult extends LeaderboardResult {
 
 const MAX_STORED = 100;
 const TOP_N = 3;
-const NAME_MIN = 2;
-const NAME_MAX = 16;
 
 function redisKey(gameId: GameId): string {
   return `lb:${gameId}`;
@@ -42,16 +48,16 @@ function getUpstashEnv(): { url: string; token: string } | null {
   return { url, token };
 }
 
-function getRedis(): Redis {
+export function tryGetRedis(): Redis | null {
   const env = getUpstashEnv();
-  if (env) {
-    return new Redis({ url: env.url, token: env.token });
-  }
-  try {
-    return Redis.fromEnv();
-  } catch {
-    throw new Error("Leaderboard storage not configured");
-  }
+  if (!env) return null;
+  return new Redis({ url: env.url, token: env.token });
+}
+
+function getRedis(): Redis {
+  const redis = tryGetRedis();
+  if (!redis) throw new Error("Leaderboard storage not configured");
+  return redis;
 }
 
 function parseMember(member: string): { name: string; ts: number } {
@@ -64,17 +70,6 @@ function parseMember(member: string): { name: string; ts: number } {
 
 function formatMember(name: string): string {
   return `${Date.now()}:${name}`;
-}
-
-export function isValidGameId(id: string): id is GameId {
-  return (GAME_IDS as readonly string[]).includes(id);
-}
-
-export function sanitizePlayerName(raw: string): string | null {
-  const trimmed = raw.trim().replace(/\s+/g, " ");
-  if (trimmed.length < NAME_MIN || trimmed.length > NAME_MAX) return null;
-  if (!/^[a-zA-Z0-9 ]+$/.test(trimmed)) return null;
-  return trimmed;
 }
 
 export function scoreQualifies(score: number, cutoffScore: number, entryCount: number): boolean {
@@ -130,16 +125,17 @@ export async function submitScore(
   if (!name) {
     return {
       accepted: false,
-      message: "Invalid player name. Use 2-16 letters, numbers, or spaces.",
+      message: INVALID_NAME_MESSAGE,
       entries: [],
       cutoffScore: 0,
     };
   }
 
-  if (!Number.isInteger(score) || score <= 0) {
+  const checkedScore = validateScore(gameId, score);
+  if (checkedScore === null) {
     return {
       accepted: false,
-      message: "Invalid score.",
+      message: INVALID_SCORE_MESSAGE,
       entries: [],
       cutoffScore: 0,
     };
@@ -149,7 +145,7 @@ export async function submitScore(
   const current = await fetchRawTop(redis, gameId, TOP_N);
   const { cutoffScore } = toLeaderboardResult(current);
 
-  if (!scoreQualifies(score, cutoffScore, current.length)) {
+  if (!scoreQualifies(checkedScore, cutoffScore, current.length)) {
     const refreshed = await getLeaderboard(gameId);
     return {
       accepted: false,
@@ -159,7 +155,7 @@ export async function submitScore(
   }
 
   const key = redisKey(gameId);
-  await redis.zadd(key, { score, member: formatMember(name) });
+  await redis.zadd(key, { score: checkedScore, member: formatMember(name) });
 
   const count = await redis.zcard(key);
   if (count > MAX_STORED) {
@@ -167,7 +163,7 @@ export async function submitScore(
   }
 
   const updated = await getLeaderboard(gameId);
-  const rank = updated.entries.find((e) => e.name === name && e.score === score)?.rank;
+  const rank = updated.entries.find((e) => e.name === name && e.score === checkedScore)?.rank;
 
   return {
     accepted: true,

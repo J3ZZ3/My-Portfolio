@@ -57,25 +57,28 @@ npm run build
 │   ├── src/
 │   │   ├── components/
 │   │   │   └── game/          # Game interface components
-│   │   ├── data/              # JSON data files (skills, quests, etc.)
+│   │   ├── data/              # Menu and arcade shell config
 │   │   ├── pages/             # Page components
 │   │   └── lib/               # Utilities
 │   └── public/                # Static assets (videos, images)
 ├── server/                    # Express server
-└── shared/                    # Shared schemas
+└── shared/                    # Canonical portfolio data and Koji prompt
 ```
 
 ## 📝 Data Management
 
-All portfolio content is managed through JSON files in `client/src/data/`:
+Portfolio facts live in `shared/data/` so the React UI and Koji_Bot read the same files:
+
+- `profile.json` - On-screen profile copy and the professional record
+- `skills.json` - Four skill groups and confirmed technologies
+- `quests.json` - Projects with links and status
+
+Shell config stays in `client/src/data/`:
 
 - `menu.json` - Navigation menu items
-- `skills.json` - Skills and tools inventory
-- `quests.json` - Projects/quests with links and status
 - `arcade.json` - Arcade game configurations
-- `profile.json` - Profile information and stats
 
-Simply edit these JSON files to update your portfolio content without touching code!
+Edit the shared JSON files to update portfolio content. Redeploy so the chatbot prompt picks up the same data.
 
 ## 🚀 Deployment
 
@@ -94,18 +97,20 @@ Copy `.env.example` to `.env` for local development:
 
 | Variable | Purpose |
 |----------|---------|
+| `GROQ_API_KEY` | Powers Koji_Bot in the COMMS tab (`/api/chat`) |
 | `KV_REST_API_URL` | Arcade leaderboard storage (Vercel Upstash integration) |
 | `KV_REST_API_TOKEN` | Arcade leaderboard storage (Vercel Upstash integration) |
-| `GROQ_API_KEY` | Powers Koji_Bot in the COMMS tab (`/api/chat`) |
+| `UPSTASH_REDIS_REST_URL` | Same store when the KV names are not set |
+| `UPSTASH_REDIS_REST_TOKEN` | Same store when the KV names are not set |
 
-**Koji_Bot** reads project data from `client/src/data/quests.json` at runtime — update quests there and redeploy; no prompt editing needed.
+**Koji_Bot** builds its prompt from `shared/data/` at runtime. Update those JSON files and redeploy; no prompt editing needed.
 
 ### Arcade Leaderboards (Upstash Redis)
 
 1. In Vercel: **Storage → Marketplace → Upstash Redis**
 2. Create a database and **Connect** it to this project
 3. Vercel auto-injects `KV_REST_API_URL` and `KV_REST_API_TOKEN` (database name e.g. PortfolioLeaderboard)
-4. Redeploy — each arcade game (Cyber Run, Memory Matrix, Binary Breaker) stores a global top 3
+4. Redeploy — Cyber Run, Memory Matrix, Binary Breaker, and Neon Chess each store a global top 3
 
 Local dev: add the same Upstash env vars to `.env` and run `npm run dev`.
 
@@ -128,11 +133,7 @@ Local dev: add the same Upstash env vars to `.env` and run `npm run dev`.
 
 ### Update Portfolio Content
 
-Edit the JSON files in `client/src/data/`:
-- Add/remove skills in `skills.json`
-- Add new projects in `quests.json`
-- Update profile info in `profile.json`
-- Modify menu items in `menu.json`
+Edit `shared/data/skills.json`, `shared/data/quests.json`, and `shared/data/profile.json` for portfolio facts. Menu items stay in `client/src/data/menu.json`.
 
 ### Background Videos
 
@@ -148,10 +149,9 @@ Replace `client/public/arcade.wav` with your own background music file.
 
 ## 📱 Responsive Design
 
-The portfolio is fully responsive with breakpoints optimized for:
-- Desktop (> 1024px)
-- Tablet (768px - 1024px)
-- Mobile (< 768px)
+The portfolio uses a left menu from the `md` breakpoint (768px) upward and a bottom bar on smaller screens. Sections scroll inside the CRT frame.
+
+Template UI kit files under `client/src/components/ui`, plus the unused Drizzle and Passport dependencies, are not part of the live portfolio. They were left in place to avoid a late cleanup risk.
 
 ## 👤 Author
 

@@ -1,0 +1,24 @@
+{
+  "groups": [
+    {
+      "id": "backend",
+      "label": "BACKEND / APIs",
+      "items": ["JavaScript", "Node.js", "Express", "REST APIs", "API Integration"]
+    },
+    {
+      "id": "frontend",
+      "label": "FRONTEND / MOBILE",
+      "items": ["React", "React Native", "Expo", "Redux", "HTML / CSS"]
+    },
+    {
+      "id": "databases",
+      "label": "DATABASES",
+      "items": ["PostgreSQL", "MongoDB", "Redis", "SQLite", "Supabase", "Firebase"]
+    },
+    {
+      "id": "devops",
+      "label": "DEVOPS / TOOLS",
+      "items": ["Docker", "Git", "GitHub", "Linux", "Coolify"]
+    }
+  ]
+}

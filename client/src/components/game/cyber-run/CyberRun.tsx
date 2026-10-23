@@ -7,17 +7,36 @@ import {
   LeaderboardCongratsBanner,
 } from "../LeaderboardQualifyModal";
 import type { GameId } from "@/lib/leaderboard";
+import {
+  claimQualification,
+  createCyberRunSession,
+  createQualifyGuard,
+  readStoredBest,
+  resetQualification,
+  writeStoredBest,
+} from "../arcadeLogic";
 
 interface CyberRunProps {
   gameId?: GameId;
+}
+
+const BEST_KEY = "koji-best-run";
+const GRAVITY = 0.6;
+const JUMP_FORCE = -10;
+
+function loadBest(): number {
+  if (typeof localStorage === "undefined") return 0;
+  return readStoredBest(() => localStorage.getItem(BEST_KEY));
 }
 
 export function CyberRun({ gameId = "run" }: CyberRunProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [score, setScore] = useState(0);
-  const [highScore, setHighScore] = useState(0);
+  const [finalScore, setFinalScore] = useState(0);
+  const [highScore, setHighScore] = useState(loadBest);
   const [gameOver, setGameOver] = useState(false);
+  const qualifyGuard = useRef(createQualifyGuard());
 
   const {
     entries,
@@ -26,6 +45,7 @@ export function CyberRun({ gameId = "run" }: CyberRunProps) {
     showQualifyModal,
     congratsMessage,
     submitting,
+    offline,
     checkQualify,
     submitName,
     skipQualify,
@@ -35,45 +55,63 @@ export function CyberRun({ gameId = "run" }: CyberRunProps) {
   const checkQualifyRef = useRef(checkQualify);
   checkQualifyRef.current = checkQualify;
 
-  const GRAVITY = 0.6;
-  const JUMP_FORCE = -10;
-  const SPEED = 5;
+  const beginRun = () => {
+    resetQualification(qualifyGuard.current);
+    setScore(0);
+    setFinalScore(0);
+    setGameOver(false);
+    setIsPlaying(true);
+  };
+
+  const beginRunRef = useRef(beginRun);
+  beginRunRef.current = beginRun;
 
   useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.code !== "Space" || isPlaying) return;
+      event.preventDefault();
+      beginRunRef.current();
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [isPlaying]);
+
+  useEffect(() => {
+    if (!isPlaying) return;
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    let animationFrameId: number;
-    let playerY = 200;
-    let velocityY = 0;
-    let obstacles: { x: number; width: number; height: number }[] = [];
-    let frameCount = 0;
-    let currentScore = 0;
-    let gameSpeed = SPEED;
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const session = createCyberRunSession();
+    const flashes: { x: number; y: number; life: number }[] = [];
+    let animationFrameId = 0;
 
-    const resetGame = () => {
-      playerY = 200;
-      velocityY = 0;
-      obstacles = [];
-      frameCount = 0;
-      currentScore = 0;
-      gameSpeed = SPEED;
-      setScore(0);
-      setGameOver(false);
+    const finish = (result: number) => {
+      setScore(result);
+      setFinalScore(result);
+      setHighScore((previous) => {
+        const next = Math.max(previous, result);
+        if (next !== previous) {
+          writeStoredBest((value) => localStorage.setItem(BEST_KEY, value), next);
+        }
+        return next;
+      });
+      setGameOver(true);
+      setIsPlaying(false);
+      if (claimQualification(qualifyGuard.current)) {
+        void checkQualifyRef.current(result);
+      }
     };
 
     const draw = () => {
-      if (!isPlaying) return;
-
       ctx.fillStyle = "#000000";
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
       ctx.strokeStyle = "rgba(0, 255, 0, 0.1)";
       ctx.lineWidth = 1;
-
-      const gridOffset = (frameCount * gameSpeed) % 40;
+      const gridOffset = (session.frameCount * session.gameSpeed) % 40;
       for (let i = 0; i < canvas.width; i += 40) {
         ctx.beginPath();
         ctx.moveTo(i - gridOffset, 300);
@@ -87,124 +125,100 @@ export function CyberRun({ gameId = "run" }: CyberRunProps) {
       ctx.lineWidth = 2;
       ctx.stroke();
 
-      velocityY += GRAVITY;
-      playerY += velocityY;
-
-      if (playerY > 270) {
-        playerY = 270;
-        velocityY = 0;
+      session.velocityY += GRAVITY;
+      session.playerY += session.velocityY;
+      if (session.playerY > 270) {
+        session.playerY = 270;
+        session.velocityY = 0;
       }
 
+      const jumping = session.velocityY < 0;
       ctx.fillStyle = "#00ff00";
-      ctx.shadowBlur = 15;
+      ctx.shadowBlur = jumping && !reducedMotion ? 28 : 15;
       ctx.shadowColor = "#00ff00";
-      ctx.fillRect(50, playerY, 30, 30);
+      ctx.fillRect(50, session.playerY, 30, 30);
       ctx.shadowBlur = 0;
 
-      if (frameCount % 100 === 0) {
-        const height = Math.random() * 40 + 20;
-        obstacles.push({
+      if (session.frameCount % 100 === 0) {
+        session.obstacles.push({
           x: canvas.width,
           width: 30,
-          height: height,
+          height: Math.random() * 40 + 20,
         });
       }
 
-      for (let i = obstacles.length - 1; i >= 0; i--) {
-        obstacles[i].x -= gameSpeed;
-
+      for (let i = session.obstacles.length - 1; i >= 0; i--) {
+        const obstacle = session.obstacles[i];
+        obstacle.x -= session.gameSpeed;
         ctx.fillStyle = "#ff0055";
         ctx.shadowBlur = 10;
         ctx.shadowColor = "#ff0055";
-        ctx.fillRect(obstacles[i].x, 300 - obstacles[i].height, obstacles[i].width, obstacles[i].height);
+        ctx.fillRect(obstacle.x, 300 - obstacle.height, obstacle.width, obstacle.height);
         ctx.shadowBlur = 0;
 
         if (
-          50 < obstacles[i].x + obstacles[i].width &&
-          50 + 30 > obstacles[i].x &&
-          playerY < 300 &&
-          playerY + 30 > 300 - obstacles[i].height
+          50 < obstacle.x + obstacle.width &&
+          80 > obstacle.x &&
+          session.playerY < 300 &&
+          session.playerY + 30 > 300 - obstacle.height
         ) {
-          handleGameOver(currentScore);
+          finish(session.score);
           return;
         }
 
-        if (obstacles[i].x + obstacles[i].width < 0) {
-          obstacles.splice(i, 1);
-          currentScore += 10;
-          setScore(currentScore);
-
-          if (currentScore % 50 === 0) {
-            gameSpeed += 0.5;
-          }
+        if (obstacle.x + obstacle.width < 0) {
+          session.obstacles.splice(i, 1);
+          session.score += 10;
+          setScore(session.score);
+          if (!reducedMotion) flashes.push({ x: 80, y: 260, life: 10 });
+          if (session.score % 50 === 0) session.gameSpeed += 0.5;
         }
       }
 
-      frameCount++;
+      for (let i = flashes.length - 1; i >= 0; i--) {
+        const flash = flashes[i];
+        ctx.fillStyle = `rgba(0, 255, 0, ${flash.life / 10})`;
+        ctx.fillRect(flash.x, flash.y, 8, 8);
+        flash.life -= 1;
+        if (flash.life <= 0) flashes.splice(i, 1);
+      }
+
+      session.frameCount += 1;
       animationFrameId = requestAnimationFrame(draw);
     };
 
-    const handleGameOver = (finalScore: number) => {
-      setIsPlaying(false);
-      setGameOver(true);
-      setHighScore((prev) => Math.max(prev, finalScore));
-      cancelAnimationFrame(animationFrameId);
-      void checkQualifyRef.current(finalScore);
+    const jump = () => {
+      if (session.playerY >= 270) session.velocityY = JUMP_FORCE;
     };
 
-    const handleJump = () => {
-      if (playerY >= 270) {
-        velocityY = JUMP_FORCE;
-      }
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.code !== "Space") return;
+      event.preventDefault();
+      jump();
     };
 
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.code === "Space") {
-        e.preventDefault();
-        if (isPlaying) {
-          handleJump();
-        } else if (!isPlaying && !gameOver) {
-          setIsPlaying(true);
-          resetGame();
-        } else if (gameOver) {
-          setIsPlaying(true);
-          resetGame();
-          draw();
-        }
-      }
+    const onTap = (event: Event) => {
+      event.preventDefault();
+      jump();
     };
 
-    const handleTap = (e: MouseEvent | TouchEvent) => {
-      e.preventDefault();
-      if (isPlaying) {
-        handleJump();
-      } else if (gameOver) {
-        setIsPlaying(true);
-        resetGame();
-        draw();
-      }
-    };
-
-    if (isPlaying) {
-      draw();
-    }
-
-    window.addEventListener("keydown", handleKeyDown);
-    canvas.addEventListener("mousedown", handleTap);
-    canvas.addEventListener("touchstart", handleTap);
+    animationFrameId = requestAnimationFrame(draw);
+    window.addEventListener("keydown", onKeyDown);
+    canvas.addEventListener("mousedown", onTap);
+    canvas.addEventListener("touchstart", onTap, { passive: false });
 
     return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-      canvas.removeEventListener("mousedown", handleTap);
-      canvas.removeEventListener("touchstart", handleTap);
       cancelAnimationFrame(animationFrameId);
+      window.removeEventListener("keydown", onKeyDown);
+      canvas.removeEventListener("mousedown", onTap);
+      canvas.removeEventListener("touchstart", onTap);
     };
-  }, [isPlaying, gameOver]);
+  }, [isPlaying]);
 
   return (
     <div className="h-full w-full flex flex-col items-center justify-center font-hud overflow-y-auto p-2">
       <LeaderboardCongratsBanner message={congratsMessage} onDismiss={dismissCongrats} />
-      <LeaderboardPanel entries={entries} loading={loading} accentClass="text-primary" />
+      <LeaderboardPanel entries={entries} loading={loading} offline={offline} accentClass="text-primary" />
 
       <div className="flex justify-between w-full max-w-2xl mb-4 text-xl">
         <div className="text-primary flex items-center gap-2">
@@ -213,24 +227,28 @@ export function CyberRun({ gameId = "run" }: CyberRunProps) {
         </div>
         <div className="text-secondary flex items-center gap-2">
           <Trophy className="w-5 h-5" />
+          <span className="font-pixel text-xs">LOCAL_BEST</span>
           <span className="font-pixel">{highScore.toString().padStart(5, "0")}</span>
         </div>
       </div>
 
-      <div className="relative border-4 border-primary p-1 bg-black shadow-[0_0_20px_rgba(0,255,0,0.2)]">
+      <div className="relative w-full max-w-2xl border-4 border-primary p-1 bg-black shadow-[0_0_20px_rgba(0,255,0,0.2)]">
         <canvas
           ref={canvasRef}
           width={800}
           height={400}
-          className="w-full max-w-2xl bg-black cursor-pointer"
+          className="block w-full h-auto aspect-[2/1] bg-black cursor-pointer touch-none"
         />
 
         {!isPlaying && !gameOver && (
-          <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/70 backdrop-blur-sm">
-            <h2 className="text-4xl font-pixel text-primary mb-4 text-glow">CYBER_RUN</h2>
-            <p className="text-muted-foreground mb-8 font-terminal text-xl">PRESS SPACE OR TAP TO JUMP</p>
+          <div
+            className="absolute inset-0 flex flex-col items-center justify-center bg-black/70 backdrop-blur-sm overflow-y-auto"
+            onClick={beginRun}
+          >
+            <h2 className="text-4xl font-pixel text-primary mb-4 text-glow text-center">CYBER_RUN</h2>
+            <p className="text-muted-foreground mb-8 font-terminal text-xl text-center">SPACE OR TAP</p>
             <button
-              onClick={() => setIsPlaying(true)}
+              onClick={beginRun}
               className="px-8 py-3 bg-primary text-black font-bold hover:scale-105 transition-transform flex items-center gap-2"
             >
               <Play className="w-5 h-5" /> START GAME
@@ -239,14 +257,15 @@ export function CyberRun({ gameId = "run" }: CyberRunProps) {
         )}
 
         {gameOver && (
-          <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/80 backdrop-blur-sm">
-            <h2 className="text-4xl font-pixel text-red-500 mb-2 text-glow">GAME OVER</h2>
-            <p className="text-white mb-6 font-hud text-xl">SCORE: {score}</p>
+          <div
+            className="absolute inset-0 flex flex-col items-center justify-center bg-black/80 backdrop-blur-sm text-center px-4 overflow-y-auto"
+            onClick={beginRun}
+          >
+            <h2 className="text-4xl font-pixel text-red-500 mb-2 text-glow">GAME_OVER</h2>
+            <p className="text-white mb-2 font-hud text-xl">FINAL_SCORE: {finalScore}</p>
+            <p className="text-secondary mb-6 font-terminal">LOCAL_BEST: {highScore}</p>
             <button
-              onClick={() => {
-                setGameOver(false);
-                setIsPlaying(true);
-              }}
+              onClick={beginRun}
               className="px-8 py-3 bg-red-500 text-white font-bold hover:scale-105 transition-transform flex items-center gap-2 border-2 border-white"
             >
               <RotateCcw className="w-5 h-5" /> RETRY
@@ -267,8 +286,7 @@ export function CyberRun({ gameId = "run" }: CyberRunProps) {
       </div>
 
       <div className="mt-6 text-muted-foreground font-terminal text-sm text-center max-w-lg">
-        <p>&gt; INSTRUCTIONS: AVOID OBSTACLES TO COMPILE THE CODE.</p>
-        <p>&gt; DIFFICULTY INCREASES WITH SUCCESSFUL COMPILATIONS.</p>
+        <p>&gt; SPACE OR TAP TO JUMP. AVOID THE OBSTACLES.</p>
       </div>
     </div>
   );

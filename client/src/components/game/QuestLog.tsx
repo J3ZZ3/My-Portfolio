@@ -1,105 +1,211 @@
+import { useState } from "react";
 import { motion } from "framer-motion";
-import { CheckCircle2, Sword, ExternalLink, PlayCircle, Clock, Lock, Wifi, WifiOff } from "lucide-react";
-import questsData from "@/data/quests.json";
+import {
+  Sword,
+  ExternalLink,
+  Download,
+  Globe,
+  CheckCircle2,
+  Clock,
+  ChevronDown,
+  Store,
+  Dumbbell,
+  ListChecks,
+  Mic,
+  CloudSun,
+} from "lucide-react";
+import questsData from "@shared/data/quests.json";
+
+type Quest = (typeof questsData.quests)[number];
+
+const categoryIcons = {
+  "Full-Stack / E-commerce": Store,
+  "Mobile Application / Fitness": Dumbbell,
+  "Mobile Application": ListChecks,
+  "Mobile Application / Audio": Mic,
+  "Web Application": CloudSun,
+} as const;
+
+const linkClass =
+  "inline-flex items-center gap-2 min-h-11 px-3 py-2 border border-primary/50 text-primary text-sm uppercase tracking-wide hover:bg-primary/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary";
 
 export function QuestLog() {
+  const quests = questsData.quests.filter((quest) => quest.public !== false);
+  const featured = quests.filter((quest) => quest.featured);
+  const archive = quests.filter((quest) => !quest.featured);
+
   return (
-    <div className="h-full w-full p-6 overflow-y-auto">
-      <h2 className="text-2xl font-pixel text-secondary mb-6 flex items-center gap-4">
-        <Sword className="w-6 h-6" />
+    <div className="h-full w-full p-4 md:p-6 overflow-y-auto">
+      <h2 className="text-sm sm:text-xl md:text-2xl font-pixel text-secondary mb-6 flex items-center gap-3 break-words">
+        <Sword className="w-6 h-6 shrink-0" />
         QUEST_LOG
       </h2>
 
-      <div className="grid grid-cols-1 gap-4 pb-4">
-        {questsData.quests.map((quest, index) => (
-          <motion.div
-            key={quest.id}
-            initial={{ x: -20, opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            transition={{ delay: index * 0.1 }}
-            className={`
-              relative p-4 border-l-4 font-hud bg-black/40 hover:bg-white/5 transition-colors group
-              ${quest.completed ? 'border-primary' : quest.status === 'in-progress' ? 'border-yellow-400/60' : 'border-muted'}
-            `}
-          >
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-2 gap-2">
-              <h3 className="text-xl font-bold tracking-wider text-primary group-hover:text-white transition-colors">
-                {quest.title}
-              </h3>
-              <div className="flex items-center gap-2 flex-wrap">
-                <StatusBadge status={quest.status} completed={quest.completed} />
-                {quest.online !== undefined && (
-                  <span className={`flex items-center gap-1 text-xs px-2 py-1 border ${quest.online ? 'text-green-400 border-green-500/40 bg-green-500/10' : 'text-red-400 border-red-500/40 bg-red-500/10'}`}>
-                    {quest.online ? <Wifi className="w-3 h-3" /> : <WifiOff className="w-3 h-3" />}
-                    {quest.online ? "ONLINE" : "OFFLINE"}
-                  </span>
-                )}
-              </div>
-            </div>
+      <section className="mb-8">
+        <h3 className="font-pixel text-sm text-primary mb-4">FEATURED_QUESTS</h3>
+        <div className="grid grid-cols-1 gap-4">
+          {featured.map((quest, index) => (
+            <QuestCard key={quest.id} quest={quest} index={index} />
+          ))}
+        </div>
+      </section>
 
-            <p className="text-muted-foreground font-terminal text-lg mb-4 leading-relaxed">
-              {quest.desc}
-            </p>
-
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
-              <div className="flex flex-wrap gap-2">
-                {quest.tech.map((t) => (
-                  <span key={t} className="px-2 py-1 text-xs border border-accent/30 text-accent bg-accent/5 font-mono">
-                    {t}
-                  </span>
-                ))}
-              </div>
-              
-              <div className="flex gap-3">
-                {quest.links?.demo && quest.links?.demoUrl && (
-                  <a
-                    href={quest.links.demoUrl}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="flex items-center gap-2 text-sm text-white hover:text-primary transition-colors uppercase font-bold tracking-wide"
-                  >
-                    <PlayCircle className="w-4 h-4" /> Demo
-                  </a>
-                )}
-                {quest.links?.view && quest.links?.viewUrl && (
-                  <a
-                    href={quest.links.viewUrl}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="flex items-center gap-2 text-sm text-white hover:text-secondary transition-colors uppercase font-bold tracking-wide"
-                  >
-                    <ExternalLink className="w-4 h-4" /> View Project
-                  </a>
-                )}
-              </div>
-            </div>
-          </motion.div>
-        ))}
-      </div>
+      {archive.length > 0 && (
+        <details className="border border-white/15 bg-black/30">
+          <summary className="cursor-pointer list-none px-4 py-3 font-pixel text-sm text-muted-foreground hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary">
+            PROJECT_ARCHIVE ({archive.length})
+          </summary>
+          <div className="grid grid-cols-1 gap-4 p-4 pt-0">
+            {archive.map((quest, index) => (
+              <QuestCard key={quest.id} quest={quest} index={index} />
+            ))}
+          </div>
+        </details>
+      )}
     </div>
   );
 }
 
-function StatusBadge({ status, completed }: { status: string; completed?: boolean }) {
-  if (completed || status === "complete") {
-    return (
-      <span className="text-primary flex items-center gap-1 text-xs px-2 py-1 bg-primary/10 border border-primary/30">
-        <CheckCircle2 className="w-3 h-3" /> COMPLETED
-      </span>
-    );
-  }
+function QuestCard({ quest, index }: { quest: Quest; index: number }) {
+  const [open, setOpen] = useState(false);
+  const Icon = categoryIcons[quest.category as keyof typeof categoryIcons] ?? Sword;
+  const complete = quest.status === "complete";
+  const features = "features" in quest ? quest.features : undefined;
+  const details = "details" in quest ? quest.details : undefined;
+  const canInspect = Boolean(features?.length || details);
+  const links = "links" in quest ? quest.links : undefined;
 
-  if (status === "in-progress") {
+  return (
+    <motion.article
+      initial={{ x: -20, opacity: 0 }}
+      animate={{ x: 0, opacity: 1 }}
+      transition={{ delay: index * 0.08 }}
+      className={`relative p-4 border-l-4 font-hud bg-black/40 hover:bg-white/5 transition-colors ${
+        complete ? "border-primary" : "border-yellow-400/70"
+      }`}
+    >
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between mb-3">
+        <div className="flex items-start gap-3 min-w-0">
+          <Icon className="w-5 h-5 mt-1 shrink-0 text-secondary" />
+          <div className="min-w-0">
+            <h3 className="text-lg md:text-xl font-bold tracking-wide text-primary break-words">
+              {quest.title}
+            </h3>
+            <p className="text-sm uppercase tracking-wider text-muted-foreground leading-relaxed">{quest.category}</p>
+          </div>
+        </div>
+        <div className="flex items-center gap-2 flex-wrap">
+          <StatusBadge status={quest.status} />
+          <AvailabilityBadge availability={quest.availability} />
+        </div>
+      </div>
+
+      <p className="text-muted-foreground font-terminal text-lg mb-4 leading-relaxed">
+        {quest.summary}
+      </p>
+
+      <div className="flex flex-wrap gap-2 mb-4">
+        {quest.tech.map((item) => (
+          <span key={item} className="px-2 py-1 text-sm border border-accent/30 text-accent bg-accent/5 font-mono">
+            {item}
+          </span>
+        ))}
+      </div>
+
+      {canInspect && (
+        <div className="mb-4">
+          <button
+            type="button"
+            aria-expanded={open}
+            onClick={() => setOpen((value) => !value)}
+            className="inline-flex items-center gap-2 min-h-11 px-3 text-sm uppercase tracking-wide text-white border border-white/20 hover:border-primary hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+          >
+            Inspect
+            <ChevronDown className={`w-4 h-4 transition-transform ${open ? "rotate-180" : ""}`} />
+          </button>
+          {open && (
+            <div className="mt-3 space-y-3 border border-white/10 bg-black/40 p-3">
+              {features && features.length > 0 && (
+                <ul className="space-y-1 text-muted-foreground font-terminal text-lg leading-relaxed">
+                  {features.map((feature) => (
+                    <li key={feature} className="pl-3 border-l-2 border-accent/40">
+                      {feature}
+                    </li>
+                  ))}
+                </ul>
+              )}
+              {details && (
+                <p className="font-terminal text-lg text-white/80 leading-relaxed">{details}</p>
+              )}
+            </div>
+          )}
+        </div>
+      )}
+
+      {links && (
+        <div className="flex flex-wrap gap-2">
+          {"live" in links && links.live && (
+            <a href={links.live} target="_blank" rel="noreferrer" className={linkClass}>
+              <Globe className="w-4 h-4" />
+              Live site
+            </a>
+          )}
+          {"repository" in links && links.repository && (
+            <a href={links.repository} target="_blank" rel="noreferrer" className={linkClass}>
+              <ExternalLink className="w-4 h-4" />
+              Source
+            </a>
+          )}
+          {"download" in links && links.download && (
+            <a href={links.download} target="_blank" rel="noreferrer" className={linkClass}>
+              <Download className="w-4 h-4" />
+              Download
+            </a>
+          )}
+        </div>
+      )}
+    </motion.article>
+  );
+}
+
+function StatusBadge({ status }: { status: string }) {
+  if (status === "complete") {
     return (
-      <span className="text-yellow-300 flex items-center gap-1 text-xs px-2 py-1 bg-yellow-500/10 border border-yellow-500/30">
-        <Clock className="w-3 h-3" /> IN PROGRESS
+      <span className="text-primary flex items-center gap-1 text-sm px-2 py-1 bg-primary/10 border border-primary/30">
+        <CheckCircle2 className="w-3 h-3" />
+        COMPLETED
       </span>
     );
   }
 
   return (
-    <span className="text-muted-foreground flex items-center gap-1 text-xs px-2 py-1 bg-white/5 border border-white/10">
-      <Lock className="w-3 h-3" /> LOCKED
+    <span className="text-yellow-300 flex items-center gap-1 text-sm px-2 py-1 bg-yellow-500/10 border border-yellow-500/30">
+      <Clock className="w-3 h-3" />
+      IN DEVELOPMENT
+    </span>
+  );
+}
+
+function AvailabilityBadge({ availability }: { availability: string }) {
+  if (availability === "live") {
+    return (
+      <span className="text-accent flex items-center gap-1 text-sm px-2 py-1 border border-accent/40 bg-accent/10">
+        LIVE_SITE
+      </span>
+    );
+  }
+
+  if (availability === "download") {
+    return (
+      <span className="text-secondary flex items-center gap-1 text-sm px-2 py-1 border border-secondary/40 bg-secondary/10">
+        DOWNLOAD
+      </span>
+    );
+  }
+
+  return (
+    <span className="text-yellow-300 flex items-center gap-1 text-sm px-2 py-1 border border-yellow-500/40 bg-yellow-500/10">
+      IN_DEVELOPMENT
     </span>
   );
 }

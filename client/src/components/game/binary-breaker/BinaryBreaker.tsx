@@ -7,17 +7,42 @@ import {
   LeaderboardCongratsBanner,
 } from "../LeaderboardQualifyModal";
 import type { GameId } from "@/lib/leaderboard";
+import {
+  claimQualification,
+  clampPaddle,
+  createQualifyGuard,
+  hitBrick,
+  pointerToCanvasX,
+  readStoredBest,
+  resetQualification,
+  writeStoredBest,
+} from "../arcadeLogic";
 
 interface BinaryBreakerProps {
   gameId?: GameId;
+}
+
+const BEST_KEY = "koji-best-breaker";
+const BRICK_ROWS = 5;
+const BRICK_COLUMNS = 8;
+const TOTAL_BRICKS = BRICK_ROWS * BRICK_COLUMNS;
+
+function loadBest(): number {
+  if (typeof localStorage === "undefined") return 0;
+  return readStoredBest(() => localStorage.getItem(BEST_KEY));
 }
 
 export function BinaryBreaker({ gameId = "breaker" }: BinaryBreakerProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [score, setScore] = useState(0);
-  const [highScore, setHighScore] = useState(0);
+  const [finalScore, setFinalScore] = useState(0);
+  const [bricksLeft, setBricksLeft] = useState(TOTAL_BRICKS);
+  const [highScore, setHighScore] = useState(loadBest);
   const [gameOver, setGameOver] = useState(false);
+  const [cleared, setCleared] = useState(false);
+  const qualifyGuard = useRef(createQualifyGuard());
+  const keysPressed = useRef<Record<string, boolean>>({});
 
   const {
     entries,
@@ -26,6 +51,7 @@ export function BinaryBreaker({ gameId = "breaker" }: BinaryBreakerProps) {
     showQualifyModal,
     congratsMessage,
     submitting,
+    offline,
     checkQualify,
     submitName,
     skipQualify,
@@ -35,237 +61,232 @@ export function BinaryBreaker({ gameId = "breaker" }: BinaryBreakerProps) {
   const checkQualifyRef = useRef(checkQualify);
   checkQualifyRef.current = checkQualify;
 
-  const keysPressed = useRef<{ [key: string]: boolean }>({});
+  const beginRun = () => {
+    resetQualification(qualifyGuard.current);
+    setScore(0);
+    setFinalScore(0);
+    setBricksLeft(TOTAL_BRICKS);
+    setGameOver(false);
+    setCleared(false);
+    setIsPlaying(true);
+  };
 
   useEffect(() => {
+    if (!isPlaying) return;
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    let animationFrameId: number;
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    let animationFrameId = 0;
     let paddleX = (canvas.width - 100) / 2;
     let ballX = canvas.width / 2;
     let ballY = canvas.height - 30;
     let dx = 4;
     let dy = -4;
-
-    const brickRowCount = 5;
-    const brickColumnCount = 8;
+    let currentScore = 0;
+    let bricksRemaining = TOTAL_BRICKS;
+    const paddleWidth = 100;
+    const paddleSpeed = 7;
     const brickWidth = 75;
     const brickHeight = 20;
     const brickPadding = 10;
     const brickOffsetTop = 30;
     const brickOffsetLeft = 30;
-    const paddleWidth = 100;
-    const paddleSpeed = 7;
-
-    interface Brick {
-      x: number;
-      y: number;
-      status: number;
-      color: string;
-    }
-
-    let bricks: Brick[][] = [];
     const colors = ["#00ffff", "#ff00ff", "#ffff00", "#00ff00", "#ff0000"];
+    const flashes: { x: number; y: number; color: string; life: number }[] = [];
+    const bricks = Array.from({ length: BRICK_COLUMNS }, (_, column) =>
+      Array.from({ length: BRICK_ROWS }, (_, row) => ({
+        x: column * (brickWidth + brickPadding) + brickOffsetLeft,
+        y: row * (brickHeight + brickPadding) + brickOffsetTop,
+        status: 1,
+        color: colors[row % colors.length],
+      })),
+    );
 
-    for (let c = 0; c < brickColumnCount; c++) {
-      bricks[c] = [];
-      for (let r = 0; r < brickRowCount; r++) {
-        bricks[c][r] = {
-          x: 0,
-          y: 0,
-          status: 1,
-          color: colors[r % colors.length],
-        };
+    const finish = (result: number, victory: boolean) => {
+      setScore(result);
+      setFinalScore(result);
+      setBricksLeft(bricksRemaining);
+      setHighScore((previous) => {
+        const next = Math.max(previous, result);
+        if (next !== previous) {
+          writeStoredBest((value) => localStorage.setItem(BEST_KEY, value), next);
+        }
+        return next;
+      });
+      setCleared(victory);
+      setGameOver(!victory);
+      setIsPlaying(false);
+      if (claimQualification(qualifyGuard.current)) {
+        void checkQualifyRef.current(result);
       }
-    }
+    };
 
-    let currentScore = 0;
+    const draw = () => {
+      if (keysPressed.current["ArrowRight"] || keysPressed.current["d"]) {
+        paddleX = clampPaddle(paddleX + paddleSpeed, canvas.width, paddleWidth);
+      } else if (keysPressed.current["ArrowLeft"] || keysPressed.current["a"]) {
+        paddleX = clampPaddle(paddleX - paddleSpeed, canvas.width, paddleWidth);
+      }
 
-    const drawBall = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      for (const column of bricks) {
+        for (const brick of column) {
+          if (brick.status !== 1) continue;
+          ctx.fillStyle = brick.color;
+          ctx.fillRect(brick.x, brick.y, brickWidth, brickHeight);
+        }
+      }
+
+      for (let i = flashes.length - 1; i >= 0; i--) {
+        const flash = flashes[i];
+        ctx.fillStyle = flash.color;
+        ctx.globalAlpha = flash.life / 8;
+        ctx.fillRect(flash.x, flash.y, brickWidth, brickHeight);
+        ctx.globalAlpha = 1;
+        flash.life -= 1;
+        if (flash.life <= 0) flashes.splice(i, 1);
+      }
+
       ctx.beginPath();
       ctx.arc(ballX, ballY, 6, 0, Math.PI * 2);
       ctx.fillStyle = "#ffffff";
       ctx.fill();
       ctx.closePath();
-    };
 
-    const drawPaddle = () => {
-      ctx.beginPath();
-      ctx.rect(paddleX, canvas.height - 15, paddleWidth, 15);
       ctx.fillStyle = "#00ffff";
-      ctx.shadowBlur = 10;
+      ctx.shadowBlur = 16;
       ctx.shadowColor = "#00ffff";
-      ctx.fill();
+      ctx.fillRect(paddleX, canvas.height - 15, paddleWidth, 15);
       ctx.shadowBlur = 0;
-      ctx.closePath();
-    };
 
-    const drawBricks = () => {
-      for (let c = 0; c < brickColumnCount; c++) {
-        for (let r = 0; r < brickRowCount; r++) {
-          if (bricks[c][r].status === 1) {
-            const brickX = c * (brickWidth + brickPadding) + brickOffsetLeft;
-            const brickY = r * (brickHeight + brickPadding) + brickOffsetTop;
-            bricks[c][r].x = brickX;
-            bricks[c][r].y = brickY;
-            ctx.beginPath();
-            ctx.rect(brickX, brickY, brickWidth, brickHeight);
-            ctx.fillStyle = bricks[c][r].color;
-            ctx.fill();
-            ctx.closePath();
+      let clearedThisFrame = false;
+      for (const column of bricks) {
+        for (const brick of column) {
+          if (brick.status !== 1) continue;
+          const hitsBrick =
+            ballX > brick.x &&
+            ballX < brick.x + brickWidth &&
+            ballY > brick.y &&
+            ballY < brick.y + brickHeight;
+          if (!hitsBrick) continue;
+          dy = -dy;
+          brick.status = 0;
+          const hit = hitBrick(currentScore, bricksRemaining);
+          currentScore = hit.score;
+          bricksRemaining = hit.bricksLeft;
+          setScore(currentScore);
+          setBricksLeft(bricksRemaining);
+          if (!reducedMotion) {
+            flashes.push({ x: brick.x, y: brick.y, color: brick.color, life: 8 });
           }
+          if (hit.cleared) clearedThisFrame = true;
         }
       }
-    };
 
-    const collisionDetection = () => {
-      for (let c = 0; c < brickColumnCount; c++) {
-        for (let r = 0; r < brickRowCount; r++) {
-          const b = bricks[c][r];
-          if (b.status === 1) {
-            if (ballX > b.x && ballX < b.x + brickWidth && ballY > b.y && ballY < b.y + brickHeight) {
-              dy = -dy;
-              b.status = 0;
-              currentScore += 10;
-              setScore(currentScore);
-
-              if (currentScore === brickRowCount * brickColumnCount * 10) {
-                dy = -dy * 1.1;
-              }
-            }
-          }
-        }
-      }
-    };
-
-    const draw = () => {
-      if (!isPlaying) return;
-
-      if ((keysPressed.current["ArrowRight"] || keysPressed.current["d"]) && paddleX < canvas.width - paddleWidth) {
-        paddleX += paddleSpeed;
-      } else if ((keysPressed.current["ArrowLeft"] || keysPressed.current["a"]) && paddleX > 0) {
-        paddleX -= paddleSpeed;
+      if (clearedThisFrame) {
+        finish(currentScore, true);
+        return;
       }
 
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      drawBricks();
-      drawBall();
-      drawPaddle();
-      collisionDetection();
-
-      if (ballX + dx > canvas.width - 6 || ballX + dx < 6) {
-        dx = -dx;
-      }
+      if (ballX + dx > canvas.width - 6 || ballX + dx < 6) dx = -dx;
       if (ballY + dy < 6) {
         dy = -dy;
       } else if (ballY + dy > canvas.height - 6) {
         if (ballX > paddleX && ballX < paddleX + paddleWidth) {
           dy = -dy;
-          const hitPoint = ballX - (paddleX + paddleWidth / 2);
-          dx = hitPoint * 0.15;
+          dx = (ballX - (paddleX + paddleWidth / 2)) * 0.15;
         } else {
-          handleGameOver(currentScore);
+          finish(currentScore, false);
           return;
         }
       }
 
       ballX += dx;
       ballY += dy;
-
       animationFrameId = requestAnimationFrame(draw);
     };
 
-    const handleGameOver = (finalScore: number) => {
-      setIsPlaying(false);
-      setGameOver(true);
-      setHighScore((prev) => Math.max(prev, finalScore));
-      cancelAnimationFrame(animationFrameId);
-      void checkQualifyRef.current(finalScore);
-    };
-
-    const mouseMoveHandler = (e: MouseEvent) => {
-      const relativeX = e.clientX - canvas.offsetLeft;
-      if (relativeX > 0 && relativeX < canvas.width) {
-        paddleX = relativeX - paddleWidth / 2;
-      }
-    };
-
-    const touchMoveHandler = (e: TouchEvent) => {
-      e.preventDefault();
-      const touch = e.touches[0];
+    const movePaddle = (clientX: number) => {
       const rect = canvas.getBoundingClientRect();
-      const relativeX = touch.clientX - rect.left;
-      if (relativeX > 0 && relativeX < canvas.width) {
-        paddleX = relativeX - paddleWidth / 2;
+      const x = pointerToCanvasX(clientX, rect, canvas.width);
+      paddleX = clampPaddle(x - paddleWidth / 2, canvas.width, paddleWidth);
+    };
+
+    const onPointerDown = (event: PointerEvent) => {
+      canvas.setPointerCapture(event.pointerId);
+      movePaddle(event.clientX);
+    };
+    const onPointerMove = (event: PointerEvent) => {
+      if (event.pointerType === "mouse" || canvas.hasPointerCapture(event.pointerId)) {
+        movePaddle(event.clientX);
       }
     };
-
-    const keyDownHandler = (e: KeyboardEvent) => {
-      keysPressed.current[e.key] = true;
+    const onKeyDown = (event: KeyboardEvent) => {
+      keysPressed.current[event.key] = true;
+    };
+    const onKeyUp = (event: KeyboardEvent) => {
+      keysPressed.current[event.key] = false;
     };
 
-    const keyUpHandler = (e: KeyboardEvent) => {
-      keysPressed.current[e.key] = false;
-    };
-
-    if (isPlaying) {
-      draw();
-      document.addEventListener("mousemove", mouseMoveHandler);
-      canvas.addEventListener("touchmove", touchMoveHandler, { passive: false });
-      window.addEventListener("keydown", keyDownHandler);
-      window.addEventListener("keyup", keyUpHandler);
-    }
+    animationFrameId = requestAnimationFrame(draw);
+    canvas.addEventListener("pointerdown", onPointerDown);
+    canvas.addEventListener("pointermove", onPointerMove);
+    window.addEventListener("keydown", onKeyDown);
+    window.addEventListener("keyup", onKeyUp);
 
     return () => {
       cancelAnimationFrame(animationFrameId);
-      document.removeEventListener("mousemove", mouseMoveHandler);
-      canvas.removeEventListener("touchmove", touchMoveHandler);
-      window.removeEventListener("keydown", keyDownHandler);
-      window.removeEventListener("keyup", keyUpHandler);
+      canvas.removeEventListener("pointerdown", onPointerDown);
+      canvas.removeEventListener("pointermove", onPointerMove);
+      window.removeEventListener("keydown", onKeyDown);
+      window.removeEventListener("keyup", onKeyUp);
+      keysPressed.current = {};
     };
-  }, [isPlaying, gameOver]);
+  }, [isPlaying]);
 
   return (
     <div className="h-full w-full flex flex-col items-center justify-center font-hud overflow-y-auto p-2">
       <LeaderboardCongratsBanner message={congratsMessage} onDismiss={dismissCongrats} />
-      <LeaderboardPanel entries={entries} loading={loading} accentClass="text-accent" />
+      <LeaderboardPanel entries={entries} loading={loading} offline={offline} accentClass="text-accent" />
 
-      <div className="flex justify-between w-full max-w-[700px] mb-4 text-xl">
+      <div className="flex justify-between w-full max-w-[700px] mb-4 text-xl gap-3">
         <div className="text-accent flex items-center gap-2">
           <span>SCORE:</span>
           <span className="font-pixel">{score.toString().padStart(5, "0")}</span>
         </div>
+        <div className="text-primary flex items-center gap-2">
+          <span>BRICKS:</span>
+          <span className="font-pixel">{bricksLeft.toString().padStart(2, "0")}</span>
+        </div>
         <div className="text-secondary flex items-center gap-2">
           <Trophy className="w-5 h-5" />
+          <span className="font-pixel text-[10px]">LOCAL_BEST</span>
           <span className="font-pixel">{highScore.toString().padStart(5, "0")}</span>
         </div>
       </div>
 
-      <div className="relative border-4 border-accent p-1 bg-black shadow-[0_0_20px_rgba(0,255,255,0.2)]">
+      <div className="relative w-full max-w-[700px] border-4 border-accent p-1 bg-black shadow-[0_0_20px_rgba(0,255,255,0.2)]">
         <canvas
           ref={canvasRef}
           width={700}
           height={500}
-          className="w-full max-w-[700px] bg-black cursor-crosshair"
+          className="block w-full h-auto aspect-[7/5] bg-black cursor-crosshair touch-none"
         />
 
-        {!isPlaying && !gameOver && (
-          <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/70 backdrop-blur-sm z-10">
+        {!isPlaying && !gameOver && !cleared && (
+          <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/70 backdrop-blur-sm z-10 text-center px-4 overflow-y-auto">
             <h2 className="text-4xl font-pixel text-accent mb-4 text-glow">
               BINARY
               <br />
               BREAKER
             </h2>
-            <p className="text-muted-foreground mb-8 font-terminal text-xl">USE MOUSE OR A/D/ARROWS TO DEFLECT</p>
+            <p className="text-muted-foreground mb-8 font-terminal text-xl">MOUSE, TOUCH, OR A/D</p>
             <button
-              onClick={() => {
-                setScore(0);
-                setIsPlaying(true);
-              }}
+              onClick={beginRun}
               className="px-8 py-3 bg-accent text-black font-bold hover:scale-105 transition-transform flex items-center gap-2"
             >
               <Play className="w-5 h-5" /> EXECUTE
@@ -273,19 +294,20 @@ export function BinaryBreaker({ gameId = "breaker" }: BinaryBreakerProps) {
           </div>
         )}
 
-        {gameOver && (
-          <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/80 backdrop-blur-sm z-10">
-            <h2 className="text-4xl font-pixel text-red-500 mb-2 text-glow">CRASHED</h2>
-            <p className="text-white mb-6 font-hud text-xl">DATA MINED: {score}</p>
+        {(gameOver || cleared) && (
+          <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/80 backdrop-blur-sm z-10 text-center px-4 overflow-y-auto">
+            <h2 className={`text-4xl font-pixel mb-2 text-glow ${cleared ? "text-accent" : "text-red-500"}`}>
+              {cleared ? "SECTOR_CLEARED" : "GAME_OVER"}
+            </h2>
+            <p className="text-white mb-2 font-hud text-xl">FINAL_SCORE: {finalScore}</p>
+            <p className="text-secondary mb-6 font-terminal">
+              {cleared ? "ROUND COMPLETE" : "DATA MINED"} · LOCAL_BEST: {highScore}
+            </p>
             <button
-              onClick={() => {
-                setGameOver(false);
-                setScore(0);
-                setIsPlaying(true);
-              }}
+              onClick={beginRun}
               className="px-8 py-3 bg-red-500 text-white font-bold hover:scale-105 transition-transform flex items-center gap-2 border-2 border-white"
             >
-              <RotateCcw className="w-5 h-5" /> REBOOT
+              <RotateCcw className="w-5 h-5" /> {cleared ? "REPLAY" : "REBOOT"}
             </button>
           </div>
         )}
@@ -303,8 +325,7 @@ export function BinaryBreaker({ gameId = "breaker" }: BinaryBreakerProps) {
       </div>
 
       <div className="mt-6 text-accent font-terminal text-sm text-center max-w-lg">
-        <p>&gt; INSTRUCTIONS: BREAK FIREWALL BLOCKS TO ACCESS DATA.</p>
-        <p>&gt; CONTROLS: MOUSE OR KEYBOARD (A/D/Left/Right)</p>
+        <p>&gt; MOUSE, TOUCH, OR A/D/ARROWS. CLEAR EVERY BRICK.</p>
       </div>
     </div>
   );

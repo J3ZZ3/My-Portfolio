@@ -71,6 +71,16 @@ function syncGameResult(
   }
 }
 
+function checkedKingSquare(game: Chess): Square | null {
+  if (!game.inCheck()) return null;
+  for (const row of game.board()) {
+    for (const piece of row) {
+      if (piece?.type === "k" && piece.color === game.turn()) return piece.square;
+    }
+  }
+  return null;
+}
+
 function fenToBoard(fen: string): { piece: string | null; square: Square }[][] {
   const rows = fen.split(" ")[0].split("/");
   const board: { piece: string | null; square: Square }[][] = [];
@@ -129,6 +139,9 @@ export function ChessGame({ gameId = "chess" }: ChessGameProps) {
   const delayTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const endFlashTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const gameStartedRef = useRef(false);
+  const chessSession = useRef(0);
+  const searchSession = useRef(0);
+  const outstandingSearches = useRef(0);
 
   const {
     entries,
@@ -137,6 +150,7 @@ export function ChessGame({ gameId = "chess" }: ChessGameProps) {
     showQualifyModal,
     congratsMessage,
     submitting,
+    offline,
     checkQualify,
     submitName,
     skipQualify,
@@ -206,6 +220,10 @@ export function ChessGame({ gameId = "chess" }: ChessGameProps) {
 
   const onBestMove = useCallback(
     (result: StockfishMoveResult) => {
+      if (outstandingSearches.current <= 0) return;
+      outstandingSearches.current -= 1;
+      if (outstandingSearches.current > 0) return;
+      if (searchSession.current !== chessSession.current) return;
       const fenBeforeAi = aiSearchFenRef.current;
       if (!fenBeforeAi) return;
 
@@ -248,9 +266,11 @@ export function ChessGame({ gameId = "chess" }: ChessGameProps) {
   const startAiTurn = useCallback(
     (currentFen: string) => {
       const preview = new Chess(currentFen);
-      if (preview.isGameOver() || preview.turn() !== "b") return;
+      if (preview.isGameOver() || preview.turn() !== "b" || !engineReady) return;
 
       setThinking(true);
+      outstandingSearches.current += 1;
+      searchSession.current = chessSession.current;
       aiTurnStartedAtRef.current = Date.now();
       playDelayMsRef.current = randomPlayDelayMs();
       aiSearchFenRef.current = currentFen;
@@ -259,7 +279,7 @@ export function ChessGame({ gameId = "chess" }: ChessGameProps) {
 
       requestMove(currentFen);
     },
-    [requestMove, sayBossLine],
+    [engineReady, requestMove, sayBossLine],
   );
 
   useEffect(() => {
@@ -361,6 +381,7 @@ export function ChessGame({ gameId = "chess" }: ChessGameProps) {
   const dismissEndOverlay = () => setShowEndOverlay(false);
 
   const handlePlayAgain = () => {
+    chessSession.current += 1;
     if (delayTimerRef.current) clearTimeout(delayTimerRef.current);
     if (endFlashTimerRef.current) clearTimeout(endFlashTimerRef.current);
     pendingMoveRef.current = null;
@@ -382,28 +403,29 @@ export function ChessGame({ gameId = "chess" }: ChessGameProps) {
 
   const game = new Chess(fen);
   const board = fenToBoard(fen);
+  const checkedKing = checkedKingSquare(game);
   const isLightSquare = (row: number, col: number) => (row + col) % 2 === 0;
   const boardLocked = thinking || !engineReady || gameOver;
 
   const boardBorderClass =
     endFlash === "victory"
-      ? "animate-pulse border-4 border-primary shadow-[0_0_30px_#00ff41]"
+      ? "motion-safe:animate-pulse border-4 border-primary shadow-[0_0_30px_#00ff41]"
       : endFlash === "defeat"
-        ? "animate-pulse border-4 border-red-500 shadow-[0_0_30px_#ef4444]"
+        ? "motion-safe:animate-pulse border-4 border-red-500 shadow-[0_0_30px_#ef4444]"
         : endFlash === "draw"
-          ? "animate-pulse border-4 border-yellow-400 shadow-[0_0_30px_#eab308]"
+          ? "motion-safe:animate-pulse border-4 border-yellow-400 shadow-[0_0_30px_#eab308]"
           : "border-4 border-primary shadow-[0_0_20px_#00ff41]";
 
   return (
     <div className="h-full w-full flex flex-col items-center justify-center font-hud overflow-y-auto p-2">
       <LeaderboardCongratsBanner message={congratsMessage} onDismiss={dismissCongrats} />
-      <LeaderboardPanel entries={entries} loading={loading} accentClass="text-yellow-400" />
+      <LeaderboardPanel entries={entries} loading={loading} offline={offline} accentClass="text-yellow-400" />
 
       <div className="relative w-full max-w-4xl mx-auto p-4">
-        <div className="flex flex-col md:flex-row items-center md:items-start justify-center gap-6">
-          <div className="flex flex-col items-center">
+        <div className="flex w-full flex-col md:flex-row items-center md:items-start justify-center gap-6">
+          <div className="flex w-full max-w-[18rem] sm:max-w-[24rem] md:max-w-[32rem] flex-col items-center">
             <div
-              className={`grid grid-cols-8 ${boardBorderClass} ${
+              className={`grid grid-cols-8 w-full max-w-[18rem] sm:max-w-[24rem] md:max-w-[32rem] ${boardBorderClass} ${
                 boardLocked ? "opacity-90 pointer-events-none" : ""
               }`}
             >
@@ -418,8 +440,11 @@ export function ChessGame({ gameId = "chess" }: ChessGameProps) {
                   const bg = isLightSquare(rowIdx, colIdx)
                     ? "bg-gray-800/80"
                     : "bg-black/90";
+                  const inCheck = checkedKing === cell.square && !isSelected;
                   const squareStyle = isSelected
                     ? "ring-4 ring-yellow-400 ring-inset"
+                    : inCheck
+                      ? "ring-4 ring-red-500 ring-inset"
                     : isLegalTarget
                       ? "ring-4 ring-green-400/50 ring-inset"
                       : isMoveTo
@@ -431,11 +456,11 @@ export function ChessGame({ gameId = "chess" }: ChessGameProps) {
                     <div
                       key={cell.square}
                       onClick={() => handleSquareClick(cell.square)}
-                      className={`${bg} ${squareStyle} w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 flex items-center justify-center cursor-pointer transition-all hover:bg-opacity-70`}
+                      className={`${bg} ${squareStyle} aspect-square w-full flex items-center justify-center cursor-pointer transition-all hover:bg-opacity-70`}
                     >
                       {cell.piece && (
                         <span
-                          className={`font-pixel text-2xl sm:text-3xl ${
+                          className={`font-pixel text-sm sm:text-2xl md:text-3xl ${
                             cell.piece === cell.piece.toUpperCase()
                               ? "text-primary drop-shadow-[0_0_6px_#00ff41]"
                               : "text-pink-500 drop-shadow-[0_0_6px_#ff1493]"
@@ -470,7 +495,7 @@ export function ChessGame({ gameId = "chess" }: ChessGameProps) {
                             : "NULLSPAWN TURN"}
               </span>
               {game.inCheck() && (
-                <span className="text-yellow-400 animate-pulse">CHECK!</span>
+                <span className="text-yellow-400 motion-safe:animate-pulse">CHECK!</span>
               )}
               {winStreak.current > 0 && !gameOver && (
                 <span className="text-yellow-400">STREAK: {winStreak.current}</span>
@@ -487,7 +512,7 @@ export function ChessGame({ gameId = "chess" }: ChessGameProps) {
         </div>
 
         {showEndOverlay && (
-          <div className="absolute inset-0 z-20 bg-black/70 backdrop-blur-sm flex flex-col items-center justify-center">
+          <div className="absolute inset-0 z-20 bg-black/70 backdrop-blur-sm flex flex-col items-center justify-center overflow-y-auto p-4">
             <div
               className={`relative bg-black/90 border-2 p-6 text-center font-pixel ${
                 winner === "player"

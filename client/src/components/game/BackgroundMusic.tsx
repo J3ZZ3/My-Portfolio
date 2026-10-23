@@ -15,6 +15,7 @@ export function BackgroundMusic({ volume = 0.25, muted = false }: BackgroundMusi
   useEffect(() => {
     if (audioRef.current) return;
     const audio = new Audio("/arcade.wav");
+    audio.preload = "none";
     audio.loop = true;
     audio.volume = volume;
     audio.muted = muted;

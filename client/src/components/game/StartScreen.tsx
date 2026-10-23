@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { Play, RefreshCw } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { BackgroundVideo } from "./BackgroundVideo";
 import { audio } from "@/lib/audio";
 
@@ -20,14 +20,26 @@ export function StartScreen({ onStart }: StartScreenProps) {
     onStart();
   };
 
+  useEffect(() => {
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key !== "Enter" && event.key !== " ") return;
+      event.preventDefault();
+      handleStart();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [onStart]);
+
   return (
     <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black overflow-hidden">
       <BackgroundVideo cycleKey={bgCycleKey} />
 
       <div className="absolute top-4 right-4 z-30 flex gap-2">
         <button
+          type="button"
           onClick={handleCycleBg}
-          className="px-3 py-2 border border-primary/40 text-primary font-mono text-xs bg-black/40 hover:bg-primary/10 transition-colors flex items-center gap-2"
+          aria-label="Change background"
+          className="min-h-11 px-3 py-2 border border-primary/40 text-primary font-mono text-xs bg-black/40 hover:bg-primary/10 transition-colors flex items-center gap-2"
         >
           <RefreshCw className="w-4 h-4" />
           CHANGE BG
@@ -50,11 +62,18 @@ export function StartScreen({ onStart }: StartScreenProps) {
         </motion.div>
 
         <motion.button
+          type="button"
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.95 }}
           onMouseEnter={() => audio.playHover()}
           onClick={handleStart}
-          className="group relative px-8 py-4 bg-transparent overflow-hidden"
+          onKeyDown={(event) => {
+            if (event.key === "Enter" || event.key === " ") {
+              event.preventDefault();
+              handleStart();
+            }
+          }}
+          className="group relative min-h-11 px-8 py-4 bg-transparent overflow-hidden"
         >
           <div className="absolute inset-0 border-4 border-primary/50 group-hover:border-primary transition-colors" />
           <div className="absolute inset-0 bg-primary/10 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />

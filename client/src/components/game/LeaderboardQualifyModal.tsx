@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Trophy, X } from "lucide-react";
 
 interface LeaderboardQualifyModalProps {
@@ -19,19 +19,33 @@ export function LeaderboardQualifyModal({
   onSkip,
 }: LeaderboardQualifyModalProps) {
   const [name, setName] = useState("");
+  const [formError, setFormError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!open) {
+      setName("");
+      setFormError(null);
+    }
+  }, [open]);
 
   if (!open) return null;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim() || submitting) return;
-    void onSubmit(name.trim());
-    setName("");
+    setFormError(null);
+    const result = await onSubmit(name.trim());
+    if (result && typeof result === "object" && "accepted" in result && result.accepted === false) {
+      const message = "message" in result && typeof result.message === "string"
+        ? result.message
+        : "Leaderboard uplink failed. Try again later.";
+      setFormError(message);
+    }
   };
 
   return (
-    <div className="absolute inset-0 flex items-center justify-center bg-black/90 backdrop-blur-sm z-20 p-4">
-      <div className="border-2 border-primary/50 bg-black p-6 max-w-sm w-full relative">
+    <div className="absolute inset-0 flex items-center justify-center bg-black/90 backdrop-blur-sm z-20 p-4 overflow-y-auto">
+      <div className="border-2 border-primary/50 bg-black p-4 sm:p-6 max-w-sm w-full max-h-full overflow-y-auto relative">
         <button
           type="button"
           onClick={onSkip}
@@ -50,11 +64,16 @@ export function LeaderboardQualifyModal({
           Congratulations! Your score of <span className="text-primary font-pixel">{score}</span> qualifies for the{" "}
           <span className="text-primary">{gameTitle}</span> top 3.
         </p>
-        <p className="font-terminal text-xs text-muted-foreground mb-4">
+        <p className="font-terminal text-sm leading-relaxed text-muted-foreground mb-4">
           Enter your callsign to claim your rank.
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-3">
+          {formError && (
+            <p className="font-terminal text-sm text-yellow-300" role="alert">
+              {formError}
+            </p>
+          )}
           <input
             type="text"
             value={name}

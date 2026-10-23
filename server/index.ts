@@ -14,6 +14,7 @@ declare module "http" {
 
 app.use(
   express.json({
+    limit: "16kb",
     verify: (req, _res, buf) => {
       req.rawBody = buf;
     },
@@ -36,23 +37,10 @@ export function log(message: string, source = "express") {
 app.use((req, res, next) => {
   const start = Date.now();
   const path = req.path;
-  let capturedJsonResponse: Record<string, any> | undefined = undefined;
-
-  const originalResJson = res.json;
-  res.json = function (bodyJson, ...args) {
-    capturedJsonResponse = bodyJson;
-    return originalResJson.apply(res, [bodyJson, ...args]);
-  };
 
   res.on("finish", () => {
-    const duration = Date.now() - start;
     if (path.startsWith("/api")) {
-      let logLine = `${req.method} ${path} ${res.statusCode} in ${duration}ms`;
-      if (capturedJsonResponse) {
-        logLine += ` :: ${JSON.stringify(capturedJsonResponse)}`;
-      }
-
-      log(logLine);
+      log(`${req.method} ${path} ${res.statusCode} in ${Date.now() - start}ms`);
     }
   });
 
@@ -62,12 +50,24 @@ app.use((req, res, next) => {
 (async () => {
   await registerRoutes(httpServer, app);
 
-  app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
-    const status = err.status || err.statusCode || 500;
-    const message = err.message || "Internal Server Error";
+  app.use((err: any, req: Request, res: Response, _next: NextFunction) => {
+    if (res.headersSent) return;
 
-    res.status(status).json({ message });
-    throw err;
+    const type = typeof err?.type === "string" ? err.type : "";
+    const status = type === "entity.too.large"
+      ? 413
+      : err instanceof SyntaxError || type === "entity.parse.failed"
+        ? 400
+        : Number(err?.status || err?.statusCode) || 500;
+    const error = status === 413
+      ? "Request is too large."
+      : status === 400
+        ? "Request could not be read."
+        : "Request failed.";
+    const code = status >= 500 ? "unavailable" : "invalid_request";
+
+    log(`${req.method} ${req.path} ${status}`);
+    res.status(status).json({ error, code });
   });
 
   // importantly only setup vite in development and after
@@ -92,7 +92,7 @@ app.use((req, res, next) => {
 
   // Windows does not support reusePort; guard to avoid ENOTSUP.
   if (process.platform !== "win32") {
-    listenOptions.reusePort = true;
+    (listenOptions as import("net").ListenOptions & { reusePort?: boolean }).reusePort = true;
   }
 
   httpServer.listen(listenOptions, () => {
